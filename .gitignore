@@ -7,7 +7,6 @@
 *.map
 *.tds
 *.dres
-*.dfm
 *.dsk
 
 # Delphi Packages
