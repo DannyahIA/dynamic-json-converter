@@ -1,0 +1,80 @@
+# Delphi Build Files
+*.dcu
+*.dcp
+*.bpl
+*.dcpil
+*.drc
+*.map
+*.tds
+*.dres
+*.dfm
+*.dsk
+
+# Delphi Packages
+*.dproj.local
+*.groupproj
+*.bdsproj
+
+# Delphi Backup Files
+*.~*
+*.bak
+*.old
+
+# Executables and Libraries
+*.exe
+*.dll
+*.bpl
+*.lib
+*.so
+*.a
+*.o
+*.obj
+*.dylib
+
+# Delphi Generated Files
+*.identcache
+*.local
+*.tvsconfig
+*.res
+*.cfg
+*.dof
+*.todo
+
+# OS-specific Files
+# macOS
+.DS_Store
+*.AppleDouble
+*.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*.swp
+
+# IDE and Debug Files
+*.log
+*.pdb
+*.aps
+
+# Build and Output Folders
+build/
+bin/
+lib/
+output/
+
+# Other Metadata
+*.ipch
+*.iobj
+*.idb
+*.pch
+*.drc
+*.manifest
+
+# Cache Files
+*.stat
+*.intermediate
+*.il~
+*.ilk
+*.tmp
