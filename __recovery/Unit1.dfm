@@ -16,7 +16,7 @@ object Form1: TForm1
     Top = 0
     Width = 619
     Height = 388
-    ActivePage = TabSheet2
+    ActivePage = tabParseJSON
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 615
@@ -279,6 +279,8 @@ object Form1: TForm1
           Height = 3
           Cursor = crVSplit
           Align = alBottom
+          Beveled = True
+          Visible = False
           ExplicitLeft = 289
           ExplicitTop = 1
           ExplicitWidth = 358
@@ -290,6 +292,8 @@ object Form1: TForm1
           Height = 3
           Cursor = crVSplit
           Align = alTop
+          Beveled = True
+          Visible = False
           ExplicitLeft = 305
           ExplicitTop = 14
           ExplicitWidth = 317
@@ -406,9 +410,9 @@ object Form1: TForm1
           Width = 609
           Height = 25
           Align = alBottom
-          Caption = 'Parse JSON'
+          Caption = 'Object to JSON'
           TabOrder = 2
-          OnClick = btmParseClick
+          OnClick = btObjToJsonClick
         end
         object pnlLabelObj: TPanel
           Left = 1

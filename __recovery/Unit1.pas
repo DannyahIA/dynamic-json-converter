@@ -254,14 +254,14 @@ begin
 
       for var FormaRemuneracao in GuiaMonitoramento.FormasRemuneracao do
       begin
-        mmSaida.Lines.Add('Forma RemuneraÁ„o: ');
+        mmSaida.Lines.Add('Forma Remunera√ß√£o: ');
 
-        mmSaida.Lines.Add(' Guia Forma RemuneraÁ„o Id: ' +
+        mmSaida.Lines.Add(' Guia Forma Remunera√ß√£o Id: ' +
           FormaRemuneracao.GuiaFormaRemuneracaoId);
         mmSaida.Lines.Add(' Guia Id: ' + FormaRemuneracao.GuiaId);
-        mmSaida.Lines.Add(' Forma RemuneraÁ„o Id: ' +
+        mmSaida.Lines.Add(' Forma Remunera√ß√£o Id: ' +
           FormaRemuneracao.FormaRemuneracaoId);
-        mmSaida.Lines.Add(' Valor RemuneraÁ„o: ' +
+        mmSaida.Lines.Add(' Valor Remunera√ß√£o: ' +
           FloatToStr(FormaRemuneracao.ValorRemuneracao));
 
         mmSaida.Lines.Add(SLineBreak);
@@ -269,10 +269,10 @@ begin
 
       for var DiagnosticoCid10 in GuiaMonitoramento.DiagnosticosCid10 do
       begin
-        mmSaida.Lines.Add('DiagnÛstico CID-10: ');
+        mmSaida.Lines.Add('Diagn√≥stico CID-10: ');
 
         mmSaida.Lines.Add(' CID-10 Id: ' + DiagnosticoCid10.Cid10Id);
-        mmSaida.Lines.Add(' SequÍncia: ' +
+        mmSaida.Lines.Add(' Sequ√™ncia: ' +
           IntToStr(DiagnosticoCid10.Sequencia));
 
         mmSaida.Lines.Add(SLineBreak);
@@ -280,14 +280,14 @@ begin
 
       for var DeclaracaoNascido in GuiaMonitoramento.DeclaracoesNascido do
       begin
-        mmSaida.Lines.Add('DeclaraÁ„o Nascido: ');
+        mmSaida.Lines.Add('Declara√ß√£o Nascido: ');
 
-        mmSaida.Lines.Add(' DeclaraÁ„o Nascido Id: ' +
+        mmSaida.Lines.Add(' Declara√ß√£o Nascido Id: ' +
           DeclaracaoNascido.DeclaracaoNascidoId);
         mmSaida.Lines.Add(' Guia Id: ' + DeclaracaoNascido.GuiaId);
-        mmSaida.Lines.Add(' SequÍncia: ' +
+        mmSaida.Lines.Add(' Sequ√™ncia: ' +
           IntToStr(DeclaracaoNascido.Sequencia));
-        mmSaida.Lines.Add(' Numero DeclaraÁ„o: ' +
+        mmSaida.Lines.Add(' Numero Declara√ß√£o: ' +
           DeclaracaoNascido.NumeroDeclaracao);
 
         mmSaida.Lines.Add(SLineBreak);
@@ -295,13 +295,13 @@ begin
 
       for var DeclaracaoObito in GuiaMonitoramento.DeclaracoesObito do
       begin
-        mmSaida.Lines.Add('DeclaraÁ„o ”bito: ');
+        mmSaida.Lines.Add('Declara√ß√£o √ìbito: ');
 
-        mmSaida.Lines.Add(' DeclaraÁ„o ”bito Id: ' +
+        mmSaida.Lines.Add(' Declara√ß√£o √ìbito Id: ' +
           DeclaracaoObito.DeclaracaoObitoId);
         mmSaida.Lines.Add(' Guia Id: ' + DeclaracaoObito.GuiaId);
-        mmSaida.Lines.Add(' SequÍncia: ' + IntToStr(DeclaracaoObito.Sequencia));
-        mmSaida.Lines.Add(' Numero DeclaraÁ„o: ' +
+        mmSaida.Lines.Add(' Sequ√™ncia: ' + IntToStr(DeclaracaoObito.Sequencia));
+        mmSaida.Lines.Add(' Numero Declara√ß√£o: ' +
           DeclaracaoObito.NumeroDeclaracao);
 
         mmSaida.Lines.Add(SLineBreak);
@@ -313,15 +313,15 @@ begin
 
         mmSaida.Lines.Add(' Procedimento Id: ' + Procedimento.ProcedimentoId);
         mmSaida.Lines.Add(' Guia Id: ' + Procedimento.GuiaId);
-        mmSaida.Lines.Add(' SequÍncia: ' + IntToStr(Procedimento.Sequencia));
-        mmSaida.Lines.Add(' CÛdigo Tabela Monitor Id: ' +
+        mmSaida.Lines.Add(' Sequ√™ncia: ' + IntToStr(Procedimento.Sequencia));
+        mmSaida.Lines.Add(' C√≥digo Tabela Monitor Id: ' +
           Procedimento.CodigoTabelaMonitorId);
         mmSaida.Lines.Add(' Grupo Procedimento Id: ' +
           Procedimento.GrupoProcedimentoId);
-        mmSaida.Lines.Add(' CÛdigo Procedimento Id: ' +
+        mmSaida.Lines.Add(' C√≥digo Procedimento Id: ' +
           Procedimento.CodigoProcedimentoId);
         mmSaida.Lines.Add(' Dente Id: ' + Procedimento.DenteId);
-        mmSaida.Lines.Add(' Regi„o Boca Id: ' + Procedimento.RegiaoBocaId);
+        mmSaida.Lines.Add(' Regi√£o Boca Id: ' + Procedimento.RegiaoBocaId);
         mmSaida.Lines.Add(' Dente Face Id: ' + Procedimento.DenteFaceId);
         mmSaida.Lines.Add(' Quantidade Informada: ' +
           FloatToStr(Procedimento.QuantidadeInformada));
@@ -336,7 +336,7 @@ begin
         mmSaida.Lines.Add(' Valor Pago Fornecedor: ' +
           FloatToStr(Procedimento.ValorPagoFornecedor));
         mmSaida.Lines.Add(' Cnpj Fornecedor: ' + Procedimento.CnpjFornecedor);
-        mmSaida.Lines.Add(' Valor CoparticipaÁ„o: ' +
+        mmSaida.Lines.Add(' Valor Coparticipa√ß√£o: ' +
           FloatToStr(Procedimento.ValorCoparticipacao));
 
         mmSaida.Lines.Add(SLineBreak);
@@ -348,9 +348,9 @@ begin
           mmSaida.Lines.Add(' Item Pacote Id: ' + ItemPacote.ItemPacoteId);
           mmSaida.Lines.Add(' Guia Procedimento Id: ' +
             ItemPacote.GuiaProcedimentoId);
-          mmSaida.Lines.Add(' CÛdigo Tabela Pacote Id: ' +
+          mmSaida.Lines.Add(' C√≥digo Tabela Pacote Id: ' +
             ItemPacote.CodigoTabelaPacoteId);
-          mmSaida.Lines.Add(' CÛdigo Procedimento: ' +
+          mmSaida.Lines.Add(' C√≥digo Procedimento: ' +
             ItemPacote.CodigoProcedimento);
           mmSaida.Lines.Add(' Quantidade: ' +
             FloatToStr(ItemPacote.Quantidade));
@@ -374,28 +374,28 @@ var
   Prop: TRttiProperty; // Propriedade RTTI para cada campo no objeto
   JsonPair: TJSONPair; // Representa um par de chave-valor no JSON
   JsonArray: TJSONArray; // Representa um array no JSON
-  ElemClass: TClass; // Classe dos elementos no array din‚mico
+  ElemClass: TClass; // Classe dos elementos no array din√¢mico
   I: integer; // Iterador de loop
   SubObject: TObject; // Objeto auxiliar para elementos de arrays
-  ArrayValue: TValue; // Valor do array final para ser atribuÌdo ‡ propriedade
+  ArrayValue: TValue; // Valor do array final para ser atribu√≠do √† propriedade
   TValueArray: TArray<TValue>;
-  // Array de valores para os elementos do array din‚mico
+  // Array de valores para os elementos do array din√¢mico
 begin
   Context := TRttiContext.Create; // Inicializa o contexto RTTI
   try
     RttiType := Context.GetType(AObject.ClassType);
-    // ObtÈm o tipo RTTI do objeto
+    // Obt√©m o tipo RTTI do objeto
 
     // Itera sobre cada par chave-valor do JSON
     for JsonPair in AJSON do
     begin
-      // Tenta obter a propriedade do objeto correspondente ‡ chave do JSON
+      // Tenta obter a propriedade do objeto correspondente √† chave do JSON
       Prop := RttiType.GetProperty(JsonPair.JsonString.Value);
 
       // Verifica se a propriedade existe no objeto
       if Assigned(Prop) then
       begin
-        // Verifica se a propriedade È um array din‚mico e se o valor no JSON È um array
+        // Verifica se a propriedade √© um array din√¢mico e se o valor no JSON √© um array
         if (Prop.PropertyType.TypeKind = tkDynArray) and
           (JsonPair.JsonValue is TJSONArray) then
         begin
@@ -404,7 +404,7 @@ begin
           SetLength(TValueArray, JsonArray.Count);
           // Define o tamanho do array com base na quantidade de itens do JSON
 
-          // ObtÈm a classe dos elementos do array din‚mico
+          // Obt√©m a classe dos elementos do array din√¢mico
           ElemClass := (Prop.PropertyType as TRttiDynamicArrayType)
             .ElementType.AsInstance.MetaclassType;
 
@@ -415,7 +415,7 @@ begin
             if JsonArray.Items[I] is TJSONObject then
             begin
               SubObject := ElemClass.Create;
-              // Cria uma inst‚ncia do tipo de elemento do array
+              // Cria uma inst√¢ncia do tipo de elemento do array
               try
                 // Chama recursivamente para preencher o subobjeto com o JSON
                 JSONToObject(SubObject, JsonArray.Items[I] as TJSONObject);
@@ -429,33 +429,33 @@ begin
             else
               raise Exception.CreateFmt
                 ('Array item at index %d is not a valid JSON object.', [I]);
-            // Erro se o item do array n„o for um objeto JSON
+            // Erro se o item do array n√£o for um objeto JSON
           end;
 
-          // Converte o array de valores para um TValue e o atribui ‡ propriedade do objeto
+          // Converte o array de valores para um TValue e o atribui √† propriedade do objeto
           ArrayValue := TValue.FromArray(Prop.PropertyType.Handle, TValueArray);
           Prop.SetValue(AObject, ArrayValue);
         end
         else
         begin
-          // Lida com propriedades de tipos simples (strings, n˙meros, etc.)
+          // Lida com propriedades de tipos simples (strings, n√∫meros, etc.)
 
-          // Verifica se o valor do campo no JSON È null
+          // Verifica se o valor do campo no JSON √© null
           if JsonPair.JsonValue.Null then
             Prop.SetValue(AObject, TValue.Empty) // Atribui um valor vazio
           else if JsonPair.JsonValue is TJSONNumber then
           begin
-            // Verifica se a propriedade È do tipo inteiro
+            // Verifica se a propriedade √© do tipo inteiro
             if Prop.PropertyType.Handle = TypeInfo(integer) then
               Prop.SetValue(AObject,
                 TValue.From<integer>(TJSONNumber(JsonPair.JsonValue).AsInt))
-              // Verifica se a propriedade È do tipo double (decimal)
+              // Verifica se a propriedade √© do tipo double (decimal)
             else if Prop.PropertyType.Handle = TypeInfo(double) then
               Prop.SetValue(AObject,
                 TValue.From<double>(TJSONNumber(JsonPair.JsonValue).AsDouble))
             else
               raise Exception.CreateFmt
-                ('Tipo numÈrico n„o suportado para a propriedade "%s".',
+                ('Tipo num√©rico n√£o suportado para a propriedade "%s".',
                 [Prop.Name]);
           end
           else if JsonPair.JsonValue is TJSONTrue then
@@ -466,12 +466,12 @@ begin
             // Atribui valor booleano False
           else if JsonPair.JsonValue is TJSONString then
           begin
-            // Verifica se a propriedade È uma data
+            // Verifica se a propriedade √© uma data
             if Prop.PropertyType.Handle = TypeInfo(TDate) then
               Prop.SetValue(AObject,
                 TValue.From<TDate>(ISO8601ToDate(TJSONString(JsonPair.JsonValue)
                 .Value, False)))
-              // Verifica se a propriedade È um DateTime
+              // Verifica se a propriedade √© um DateTime
             else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
               Prop.SetValue(AObject,
                 TValue.From<TDateTime>
@@ -483,8 +483,8 @@ begin
           end
           else
             raise Exception.CreateFmt
-              ('Tipo de JSON n„o suportado para a propriedade "%s".',
-              [Prop.Name]); // Erro se o tipo JSON n„o for suportado
+              ('Tipo de JSON n√£o suportado para a propriedade "%s".',
+              [Prop.Name]); // Erro se o tipo JSON n√£o for suportado
         end;
       end;
     end;
@@ -496,84 +496,111 @@ end;
 procedure TForm1.btObjToJsonClick(Sender: TObject);
 var
   Loja: TLoja;
+
+  JSONEntrada: TJSONObject;
   JSON: TJSONObject;
+
+  SomeClass: TSomeClass;
 begin
-  Loja := TLoja.Create;
+  JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada2.Text) as TJSONObject;
   try
-    // Popule Loja aqui
-    JSON := TJSONObject.Create;
-    TSomeClass.Create.ObjectToJSON(Loja, JSON);
+    Loja := TLoja.Create;
     try
-      mmSaida2.Lines.Add(JSON.ToString);
+      SomeClass := TSomeClass.Create;
+      SomeClass.JSONToObject(Loja, JSONEntrada);
+
+      JSON := TJSONObject.Create;
+      SomeClass.ObjectToJSON(Loja, JSON);
+      try
+        mmSaida2.Clear;
+        mmSaida2.Lines.Add(TJSONValue.Create.ParseJSONValue(JSON.ToString).Format());
+      finally
+        JSON.Free;
+      end;
     finally
-      JSON.Free;
+      Loja.Free;
     end;
   finally
-    Loja.Free;
+    JSONEntrada.Free;
   end;
 end;
 
 procedure TSomeClass.ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
 var
-  Context: TRttiContext;
-  RttiType: TRttiType;
-  Prop: TRttiProperty;
-  PropValue: TValue;
-  JsonValue: TJSONValue;
-  SubJSON: TJSONObject;
-  JsonArray: TJSONArray;
-  DynArray: TRttiDynamicArrayType;
-  I: integer;
-  DynArrayValue: TValue;
+  Context: TRttiContext; // Contexto para RTTI
+  RttiType: TRttiType; // Tipo RTTI do objeto
+  Prop: TRttiProperty; // Propriedade atual do objeto
+  PropValue: TValue; // Valor da propriedade atual
+  JsonValue: TJSONValue; // Valor JSON tempor√°rio (n√£o utilizado neste c√≥digo)
+  SubJSON: TJSONObject; // Objeto JSON para propriedades que s√£o objetos
+  JsonArray: TJSONArray; // Array JSON para propriedades que s√£o arrays din√¢micos
+  DynArray: TRttiDynamicArrayType; // Tipo din√¢mico da propriedade de array
+  I: integer; // Contador de loop
+  DynArrayValue: TValue; // Valor de cada elemento do array din√¢mico
 begin
+  // Cria o contexto RTTI para acessar informa√ß√µes sobre o tipo do objeto
   Context := TRttiContext.Create;
   try
-    // ObtÈm o tipo RTTI do objeto
+    // Obt√©m o tipo RTTI do objeto passado como par√¢metro
     RttiType := Context.GetType(AObject.ClassType);
 
-    // Itera pelas propriedades do objeto
+    // Itera pelas propriedades do objeto utilizando RTTI
     for Prop in RttiType.GetProperties do
     begin
-      // Verifica se a propriedade È legÌvel (possui getter)
+      // Verifica se a propriedade √© leg√≠vel (possui m√©todo getter)
       if Prop.IsReadable then
       begin
+        // Obt√©m o valor atual da propriedade
         PropValue := Prop.GetValue(AObject);
 
-        // Lida com arrays din‚micos
+        // Lida com propriedades que s√£o arrays din√¢micos
         if (Prop.PropertyType.TypeKind = tkDynArray) then
         begin
+          // Obt√©m o tipo da propriedade como um array din√¢mico
           DynArray := TRttiDynamicArrayType(Prop.PropertyType);
+          // Cria um novo array JSON para armazenar os elementos do array din√¢mico
           JsonArray := TJSONArray.Create;
 
+          // Itera pelos elementos do array din√¢mico
           for I := 0 to PropValue.GetArrayLength - 1 do
           begin
+            // Obt√©m o valor de cada elemento do array
             DynArrayValue := PropValue.GetArrayElement(I);
+            // Verifica se o elemento √© um objeto
             if DynArrayValue.IsObject then
             begin
+              // Cria um novo objeto JSON para o elemento
               SubJSON := TJSONObject.Create;
+              // Chama recursivamente a fun√ß√£o para converter o objeto em JSON
               ObjectToJSON(DynArrayValue.AsObject, SubJSON);
-              // Recursivamente processa objetos dentro de arrays
+              // Adiciona o objeto JSON ao array JSON
               JsonArray.AddElement(SubJSON);
             end
+            // Verifica se o elemento √© um n√∫mero inteiro
             else if DynArrayValue.Kind = tkInteger then
               JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsInteger))
+            // Verifica se o elemento √© um n√∫mero em ponto flutuante
             else if DynArrayValue.Kind = tkFloat then
               JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsExtended))
+            // Verifica se o elemento √© uma string
             else if DynArrayValue.Kind = tkString then
               JsonArray.AddElement(TJSONString.Create(DynArrayValue.AsString));
           end;
 
+          // Adiciona o array JSON √† propriedade correspondente no objeto JSON final
           AJSON.AddPair(Prop.Name, JsonArray);
         end
-        // Lida com objetos aninhados
+        // Lida com propriedades que s√£o objetos aninhados
         else if PropValue.IsObject then
         begin
+          // Cria um novo objeto JSON para a propriedade aninhada
           SubJSON := TJSONObject.Create;
+          // Chama recursivamente a fun√ß√£o para converter o objeto em JSON
           ObjectToJSON(PropValue.AsObject, SubJSON);
-          // Processa objetos aninhados recursivamente
+          // Adiciona o objeto JSON aninhado ao objeto JSON final
           AJSON.AddPair(Prop.Name, SubJSON);
         end
-        // Lida com valores simples
+        // Lida com propriedades que s√£o valores simples
         else if PropValue.Kind = tkInteger then
           AJSON.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsInteger))
         else if PropValue.Kind = tkFloat then
@@ -588,20 +615,22 @@ begin
           else
             AJSON.AddPair(Prop.Name, TJSONString.Create(PropValue.ToString));
         end
+        // Lida com registros (como TDate e TDateTime)
         else if PropValue.Kind = tkRecord then
         begin
-          // Lida com valores de data e hora (como TDate e TDateTime)
+          // Verifica se a propriedade √© do tipo TDate e a converte
           if Prop.PropertyType.Handle = TypeInfo(TDate) then
             AJSON.AddPair(Prop.Name,
               TJSONString.Create(DateToISO8601(PropValue.AsType<TDate>, False)))
+          // Verifica se a propriedade √© do tipo TDateTime e a converte
           else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
             AJSON.AddPair(Prop.Name,
-              TJSONString.Create
-              (DateToISO8601(PropValue.AsType<TDateTime>, True)));
+              TJSONString.Create(DateToISO8601(PropValue.AsType<TDateTime>, True)));
         end;
       end;
     end;
   finally
+    // Libera o contexto RTTI
     Context.Free;
   end;
 end;

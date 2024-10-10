@@ -2,8 +2,6 @@ unit GuiaMonitoramentoDto;
 
 interface
 
-uses System.Generics.Collections;
-
 type
   TGuiaFormaRemuneracao = class;
   TGuiaDiagnosticoCid10 = class;
@@ -214,8 +212,6 @@ type
       read FDeclaracoesObito write FDeclaracoesObito;
     property Procedimentos: TArray<TGuiaProcedimento> read FProcedimentos
       write FProcedimentos;
-
-    constructor Create;
   end;
 
   // FORMA REMUNERAÇÃO
@@ -326,8 +322,6 @@ type
       write FValorCoparticipacao;
     property ItemsPacote: TArray<TGuiaItemPacote> read FItemsPacote
       write FItemsPacote;
-
-    constructor Create;
   end;
 
   // ITEM PACOTE
@@ -350,19 +344,5 @@ type
   end;
 
 implementation
-
-{ TGuiaMonitoramento }
-
-constructor TGuiaMonitoramento.Create;
-begin
-  inherited;
-end;
-
-{ TGuiaProcedimento }
-
-constructor TGuiaProcedimento.Create;
-begin
-  inherited;
-end;
 
 end.

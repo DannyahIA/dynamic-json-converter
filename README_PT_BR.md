@@ -126,3 +126,67 @@ end;
 - **Desempenho do RTTI**: Embora o RTTI seja poderoso, ele pode introduzir sobrecarga de desempenho em grandes conjuntos de dados. Considere otimizar, se necessário.
 
 Seguindo esta documentação, modificações futuras devem ser mais fáceis, pois cada seção explica claramente sua finalidade e comportamento.
+
+
+---
+
+## Procedimento `TSomeClass.ObjectToJSON`
+
+A função `ObjectToJSON` converte um objeto Delphi (`TObject`) em um objeto JSON (`TJSONObject`). Ela utiliza RTTI (Run-Time Type Information) para iterar sobre as propriedades do objeto e construir um JSON correspondente.
+
+### Parâmetros
+
+- **AObject**: O objeto que será convertido para JSON. Deve ser uma instância de `TObject`.
+- **AJSON**: Um objeto `TJSONObject` que será preenchido com os dados convertidos a partir de `AObject`. Este parâmetro é passado por referência, permitindo que o JSON resultante seja retornado.
+
+### Detalhes da Implementação
+
+1. **Inicialização do Contexto RTTI**:
+   - Um contexto RTTI (`TRttiContext`) é criado para acessar informações sobre o tipo do objeto.
+
+2. **Iteração sobre Propriedades**:
+   - A função itera sobre todas as propriedades do objeto usando RTTI. Para cada propriedade:
+     - Verifica se a propriedade é legível (possui um getter).
+     - Obtém o valor atual da propriedade.
+
+3. **Tratamento de Propriedades de Array Dinâmico**:
+   - Se a propriedade for um array dinâmico (`tkDynArray`):
+     - Cria um `TJSONArray` para armazenar os elementos.
+     - Itera sobre cada elemento do array, tratando os casos em que os elementos são objetos, números inteiros, números em ponto flutuante ou strings.
+     - Adiciona cada elemento ao `TJSONArray` correspondente.
+
+4. **Tratamento de Objetos Aninhados**:
+   - Se a propriedade for um objeto:
+     - Cria um novo `TJSONObject` e chama recursivamente a função para converter o objeto aninhado em JSON.
+     - Adiciona o objeto JSON aninhado ao JSON principal.
+
+5. **Tratamento de Valores Simples**:
+   - Se a propriedade for um valor simples (inteiro, flutuante ou string):
+     - Adiciona o valor ao `TJSONObject` correspondente, convertendo para o tipo JSON apropriado.
+
+6. **Tratamento de Valores Booleanos e Registros**:
+   - Se a propriedade for do tipo booleano, adiciona como `TJSONBool`.
+   - Se for um registro (como `TDate` ou `TDateTime`), converte para o formato ISO 8601 e adiciona como `TJSONString`.
+
+7. **Liberação de Recursos**:
+   - No final, o contexto RTTI é liberado para evitar vazamentos de memória.
+
+### Exemplo de Uso
+
+```delphi
+var
+  MeuObjeto: TMeuObjeto;
+  MeuJSON: TJSONObject;
+begin
+  MeuObjeto := TMeuObjeto.Create;
+  MeuJSON := TJSONObject.Create;
+  try
+    ObjectToJSON(MeuObjeto, MeuJSON);
+    // Aqui, MeuJSON contém a representação JSON de MeuObjeto
+  finally
+    MeuObjeto.Free;
+    MeuJSON.Free;
+  end;
+end;
+
+
