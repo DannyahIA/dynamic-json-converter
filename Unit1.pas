@@ -100,7 +100,7 @@ type
   end;
 
   // OTHER
-  TSomeClass = class
+  TJsonDynamicConverter = class
     procedure JSONToObject(AObject: TObject; AJSON: TJSONObject);
     procedure ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
   end;
@@ -112,11 +112,10 @@ implementation
 
 {$R *.dfm}
 
-// OBJECT TO JSON
+// JSON PARA OBJETO
 procedure TForm1.btmParseClick(Sender: TObject);
 var
   GuiaMonitoramento: TGuiaMonitoramento;
-
   JSONObj: TJSONObject;
 begin
   // Parse da string para um JsonObject
@@ -124,14 +123,10 @@ begin
   try
     GuiaMonitoramento := TGuiaMonitoramento.Create;
     try
-      TSomeClass.Create.JSONToObject(GuiaMonitoramento, JSONObj);
-
+      TJsonDynamicConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj); //Popula o objeto com os dados do json
       mmSaida.Clear;
 
-      // Agora o objeto deve estar populado com os dados do JSON
-
       mmSaida.Lines.Add('Guia: ');
-
       mmSaida.Lines.Add('GuiaId: ' + GuiaMonitoramento.GuiaId);
       mmSaida.Lines.Add('RegistroAns: ' + GuiaMonitoramento.RegistroAns);
       mmSaida.Lines.Add('TipoRegistroId: ' + GuiaMonitoramento.TipoRegistroId);
@@ -367,7 +362,43 @@ begin
   end;
 end;
 
-procedure TSomeClass.JSONToObject(AObject: TObject; AJSON: TJSONObject);
+// OBJETO PARA JSON
+procedure TForm1.btObjToJsonClick(Sender: TObject);
+var
+  // Variaveis para popular objeto com json
+  Loja: TLoja;
+  JSONEntrada: TJSONObject;
+
+  // Variaveis de conversão de objeto para json
+  JSON: TJSONObject;
+  SomeClass: TJsonDynamicConverter;
+begin
+  JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada2.Text) as TJSONObject;
+  try
+    Loja := TLoja.Create;
+    try
+      SomeClass := TJsonDynamicConverter.Create;
+      SomeClass.JSONToObject(Loja, JSONEntrada);
+
+      JSON := TJSONObject.Create;
+      SomeClass.ObjectToJSON(Loja, JSON);
+      try
+        mmSaida2.Clear;
+        mmSaida2.Lines.Add(TJSONValue.Create.ParseJSONValue(JSON.ToString).Format());
+      finally
+        JSON.Free;
+      end;
+    finally
+      Loja.Free;
+    end;
+  finally
+    JSONEntrada.Free;
+  end;
+end;
+
+{ TJsonDynamicConverter }
+
+procedure TJsonDynamicConverter.JSONToObject(AObject: TObject; AJSON: TJSONObject);
 var
   Context: TRttiContext; // Contexto RTTI para acessar as propriedades do objeto
   RttiType: TRttiType; // Representa o tipo do objeto usando RTTI
@@ -493,87 +524,82 @@ begin
   end;
 end;
 
-procedure TForm1.btObjToJsonClick(Sender: TObject);
+procedure TJsonDynamicConverter.ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
 var
-  Loja: TLoja;
-  JSON: TJSONObject;
+  Context: TRttiContext; // Contexto para RTTI
+  RttiType: TRttiType; // Tipo RTTI do objeto
+  Prop: TRttiProperty; // Propriedade atual do objeto
+  PropValue: TValue; // Valor da propriedade atual
+  JsonValue: TJSONValue; // Valor JSON temporário (não utilizado neste código)
+  SubJSON: TJSONObject; // Objeto JSON para propriedades que são objetos
+  JsonArray: TJSONArray; // Array JSON para propriedades que são arrays dinâmicos
+  DynArray: TRttiDynamicArrayType; // Tipo dinâmico da propriedade de array
+  I: integer; // Contador de loop
+  DynArrayValue: TValue; // Valor de cada elemento do array dinâmico
 begin
-  Loja := TLoja.Create;
-  try
-    // Popule Loja aqui
-    JSON := TJSONObject.Create;
-    TSomeClass.Create.ObjectToJSON(Loja, JSON);
-    try
-      mmSaida2.Lines.Add(JSON.ToString);
-    finally
-      JSON.Free;
-    end;
-  finally
-    Loja.Free;
-  end;
-end;
-
-procedure TSomeClass.ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
-var
-  Context: TRttiContext;
-  RttiType: TRttiType;
-  Prop: TRttiProperty;
-  PropValue: TValue;
-  JsonValue: TJSONValue;
-  SubJSON: TJSONObject;
-  JsonArray: TJSONArray;
-  DynArray: TRttiDynamicArrayType;
-  I: integer;
-  DynArrayValue: TValue;
-begin
+  // Cria o contexto RTTI para acessar informações sobre o tipo do objeto
   Context := TRttiContext.Create;
   try
-    // Obtém o tipo RTTI do objeto
+    // Obtém o tipo RTTI do objeto passado como parâmetro
     RttiType := Context.GetType(AObject.ClassType);
 
-    // Itera pelas propriedades do objeto
+    // Itera pelas propriedades do objeto utilizando RTTI
     for Prop in RttiType.GetProperties do
     begin
-      // Verifica se a propriedade é legível (possui getter)
+      // Verifica se a propriedade é legível (possui método getter)
       if Prop.IsReadable then
       begin
+        // Obtém o valor atual da propriedade
         PropValue := Prop.GetValue(AObject);
 
-        // Lida com arrays dinâmicos
+        // Lida com propriedades que são arrays dinâmicos
         if (Prop.PropertyType.TypeKind = tkDynArray) then
         begin
+          // Obtém o tipo da propriedade como um array dinâmico
           DynArray := TRttiDynamicArrayType(Prop.PropertyType);
+          // Cria um novo array JSON para armazenar os elementos do array dinâmico
           JsonArray := TJSONArray.Create;
 
+          // Itera pelos elementos do array dinâmico
           for I := 0 to PropValue.GetArrayLength - 1 do
           begin
+            // Obtém o valor de cada elemento do array
             DynArrayValue := PropValue.GetArrayElement(I);
+            // Verifica se o elemento é um objeto
             if DynArrayValue.IsObject then
             begin
+              // Cria um novo objeto JSON para o elemento
               SubJSON := TJSONObject.Create;
+              // Chama recursivamente a função para converter o objeto em JSON
               ObjectToJSON(DynArrayValue.AsObject, SubJSON);
-              // Recursivamente processa objetos dentro de arrays
+              // Adiciona o objeto JSON ao array JSON
               JsonArray.AddElement(SubJSON);
             end
+            // Verifica se o elemento é um número inteiro
             else if DynArrayValue.Kind = tkInteger then
               JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsInteger))
+            // Verifica se o elemento é um número em ponto flutuante
             else if DynArrayValue.Kind = tkFloat then
               JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsExtended))
+            // Verifica se o elemento é uma string
             else if DynArrayValue.Kind = tkString then
               JsonArray.AddElement(TJSONString.Create(DynArrayValue.AsString));
           end;
 
+          // Adiciona o array JSON à propriedade correspondente no objeto JSON final
           AJSON.AddPair(Prop.Name, JsonArray);
         end
-        // Lida com objetos aninhados
+        // Lida com propriedades que são objetos aninhados
         else if PropValue.IsObject then
         begin
+          // Cria um novo objeto JSON para a propriedade aninhada
           SubJSON := TJSONObject.Create;
+          // Chama recursivamente a função para converter o objeto em JSON
           ObjectToJSON(PropValue.AsObject, SubJSON);
-          // Processa objetos aninhados recursivamente
+          // Adiciona o objeto JSON aninhado ao objeto JSON final
           AJSON.AddPair(Prop.Name, SubJSON);
         end
-        // Lida com valores simples
+        // Lida com propriedades que são valores simples
         else if PropValue.Kind = tkInteger then
           AJSON.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsInteger))
         else if PropValue.Kind = tkFloat then
@@ -588,20 +614,22 @@ begin
           else
             AJSON.AddPair(Prop.Name, TJSONString.Create(PropValue.ToString));
         end
+        // Lida com registros (como TDate e TDateTime)
         else if PropValue.Kind = tkRecord then
         begin
-          // Lida com valores de data e hora (como TDate e TDateTime)
+          // Verifica se a propriedade é do tipo TDate e a converte
           if Prop.PropertyType.Handle = TypeInfo(TDate) then
             AJSON.AddPair(Prop.Name,
               TJSONString.Create(DateToISO8601(PropValue.AsType<TDate>, False)))
+          // Verifica se a propriedade é do tipo TDateTime e a converte
           else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
             AJSON.AddPair(Prop.Name,
-              TJSONString.Create
-              (DateToISO8601(PropValue.AsType<TDateTime>, True)));
+              TJSONString.Create(DateToISO8601(PropValue.AsType<TDateTime>, True)));
         end;
       end;
     end;
   finally
+    // Libera o contexto RTTI
     Context.Free;
   end;
 end;

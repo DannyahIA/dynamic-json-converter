@@ -200,7 +200,6 @@ object Form1: TForm1
             '}')
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitHeight = 310
         end
         object mmSaida: TMemo
           Left = 308
@@ -264,6 +263,8 @@ object Form1: TForm1
         Align = alClient
         Caption = 'Panel1'
         TabOrder = 0
+        ExplicitWidth = 607
+        ExplicitHeight = 359
         object Splitter4: TSplitter
           Left = 305
           Top = 20
@@ -279,6 +280,8 @@ object Form1: TForm1
           Height = 3
           Cursor = crVSplit
           Align = alBottom
+          Beveled = True
+          Visible = False
           ExplicitLeft = 289
           ExplicitTop = 1
           ExplicitWidth = 358
@@ -290,6 +293,8 @@ object Form1: TForm1
           Height = 3
           Cursor = crVSplit
           Align = alTop
+          Beveled = True
+          Visible = False
           ExplicitLeft = 305
           ExplicitTop = 14
           ExplicitWidth = 317
@@ -389,6 +394,7 @@ object Form1: TForm1
             '}')
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitHeight = 310
         end
         object mmSaida2: TMemo
           Left = 308
@@ -399,6 +405,8 @@ object Form1: TForm1
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
+          ExplicitWidth = 298
+          ExplicitHeight = 310
         end
         object btmConvert: TButton
           Left = 1
@@ -406,9 +414,11 @@ object Form1: TForm1
           Width = 609
           Height = 25
           Align = alBottom
-          Caption = 'Parse JSON'
+          Caption = 'Object to JSON'
           TabOrder = 2
-          OnClick = btmParseClick
+          OnClick = btObjToJsonClick
+          ExplicitTop = 333
+          ExplicitWidth = 605
         end
         object pnlLabelObj: TPanel
           Left = 1
@@ -417,6 +427,7 @@ object Form1: TForm1
           Height = 16
           Align = alTop
           TabOrder = 3
+          ExplicitWidth = 605
           object Label1: TLabel
             Left = 121
             Top = 0
