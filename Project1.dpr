@@ -3,7 +3,7 @@ program Project1;
 uses
   Vcl.Forms,
   Unit1 in 'Unit1.pas' {Form1},
-  GuiaMonitoramentoDto in 'GuiaMonitoramentoDto.pas',
+  DtosExemplo in 'DtosExemplo.pas',
   JSONDynamicConverter in 'JSONDynamicConverter.pas';
 
 {$R *.res}

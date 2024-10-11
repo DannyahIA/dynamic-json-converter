@@ -11,7 +11,7 @@ uses
   System.Generics.Collections;
 
 type
-  TJsonDynamicConverter = class
+  TJSONDynConverter = class
     procedure JSONToObject(AObject: TObject; AJSON: TJSONObject);
     procedure ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
     procedure JSONArrayToObjectList<T: class, constructor>(AArray: TJSONArray;
@@ -29,7 +29,7 @@ implementation
 { --------------------------- TJsonDynamicConverter --------------------------- }
 
 { JSONObject to Object }
-procedure TJsonDynamicConverter.JSONToObject(AObject: TObject;
+procedure TJSONDynConverter.JSONToObject(AObject: TObject;
   AJSON: TJSONObject);
 var
   Context: TRttiContext; // Contexto RTTI para acessar as propriedades do objeto
@@ -112,7 +112,7 @@ begin
 end;
 
 { JSONArray to ObjectList }
-procedure TJsonDynamicConverter.JSONArrayToObjectList<T>(AArray: TJSONArray;
+procedure TJSONDynConverter.JSONArrayToObjectList<T>(AArray: TJSONArray;
   AObjectList: TObjectList<T>);
 var
   I: integer;
@@ -143,7 +143,7 @@ begin
 end;
 
 { Object to JSONObject }
-procedure TJsonDynamicConverter.ObjectToJSON(AObject: TObject;
+procedure TJSONDynConverter.ObjectToJSON(AObject: TObject;
   var AJSON: TJSONObject);
 var
   Context: TRttiContext; // Contexto para RTTI
@@ -253,7 +253,7 @@ begin
 end;
 
 { ObjectList to JSONArray }
-procedure TJsonDynamicConverter.ObjectListToJSONArray<T>
+procedure TJSONDynConverter.ObjectListToJSONArray<T>
   (AObjectList: TObjectList<T>; var AJSONArray: TJSONArray);
 var
   I: integer;
@@ -271,7 +271,7 @@ begin
 end;
 
 { UTILS }
-procedure TJsonDynamicConverter.CheckValueType(JsonPair: TJSONPair;
+procedure TJSONDynConverter.CheckValueType(JsonPair: TJSONPair;
   Prop: TRttiProperty; AObject: TObject);
 begin
   // Verifica se o valor do campo no JSON é null

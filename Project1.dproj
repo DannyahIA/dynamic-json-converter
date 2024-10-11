@@ -102,7 +102,7 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="GuiaMonitoramentoDto.pas"/>
+        <DCCReference Include="DtosExemplo.pas"/>
         <DCCReference Include="JSONDynamicConverter.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

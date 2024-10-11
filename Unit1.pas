@@ -3,25 +3,23 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows,
-  Winapi.Messages,
+  Vcl.Forms,
+  System.JSON,
+  Vcl.Dialogs,
   Vcl.Graphics,
   Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  System.JSON,
+  Vcl.ComCtrls,
+  System.Classes,
   System.SysUtils,
   System.Generics.Collections,
-  Vcl.ComCtrls,
-  DateUtils,
+
+  // DTOs de exemplo
+  DtosExemplo,
 
   // FUNÇÃO PARA CONVERTER JSON
-  JSONDynamicConverter,
-
-  // GUIA DTO
-  GuiaMonitoramentoDto, System.Classes;
+  JSONDynamicConverter;
 
 type
   TForm1 = class(TForm)
@@ -80,28 +78,6 @@ type
     { Public declarations }
   end;
 
-  // CLASSES EXEMPLO
-type
-  TProduto = class(TObject)
-  private
-    FNome: string;
-    FPreco: double;
-    FProdutos: TArray<TProduto>;
-  public
-    property Nome: string read FNome write FNome;
-    property Preco: double read FPreco write FPreco;
-    property Produtos: TArray<TProduto> read FProdutos write FProdutos;
-  end;
-
-  TLoja = class
-  private
-    FNome: string;
-    FProdutos: TArray<TProduto>;
-  public
-    property Nome: string read FNome write FNome;
-    property Produtos: TArray<TProduto> read FProdutos write FProdutos;
-  end;
-
 var
   Form1: TForm1;
 
@@ -113,6 +89,7 @@ implementation
 procedure TForm1.btmParseClick(Sender: TObject);
 var
   GuiaMonitoramento: TGuiaMonitoramento;
+  JSONConverter: TJSONDynConverter;
   JSONObj: TJSONObject;
 begin
   // Parse da string para um JsonObject
@@ -120,7 +97,9 @@ begin
   try
     GuiaMonitoramento := TGuiaMonitoramento.Create;
     try
-      TJsonDynamicConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj);
+      JSONConverter := TJSONDynConverter.Create;
+      JSONConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj);
+      JSONConverter.Free;
 
       // Limpa a saída antes de colocar novos dados
       mmSaida.Clear;
@@ -365,6 +344,7 @@ end;
 procedure TForm1.btmParseJSONArrayClick(Sender: TObject);
 var
   GuiaList: TObjectList<TGuiaMonitoramento>;
+  JSONConverter: TJSONDynConverter;
   JSONArray: TJSONArray;
 begin
   // Parse da string para um JsonArray
@@ -372,8 +352,10 @@ begin
   try
     GuiaList := TObjectList<TGuiaMonitoramento>.Create;
     try
-      TJsonDynamicConverter.Create.JSONArrayToObjectList<TGuiaMonitoramento>
-        (JSONArray, GuiaList);
+      JSONConverter := TJSONDynConverter.Create;
+      JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONArray,
+        GuiaList);
+      JSONConverter.Free;
 
       // Limpa a saída antes de colocar novos dados
       mmSaida2.Clear;
@@ -634,17 +616,18 @@ var
 
   // Variaveis de conversão de objeto para json
   JSONObject: TJSONObject;
-  JSONConverter: TJsonDynamicConverter;
+  JSONConverter: TJSONDynConverter;
 begin
   JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada3.Text) as TJSONObject;
   try
     Loja := TLoja.Create;
     try
-      JSONConverter := TJsonDynamicConverter.Create;
+      JSONConverter := TJSONDynConverter.Create;
       JSONConverter.JSONToObject(Loja, JSONEntrada);
 
       JSONObject := TJSONObject.Create;
       JSONConverter.ObjectToJSON(Loja, JSONObject);
+      JSONConverter.Free;
       try
         mmSaida3.Clear;
         mmSaida3.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONObject.ToString)
@@ -654,7 +637,6 @@ begin
       end;
     finally
       Loja.Free;
-      JSONConverter.Free;
     end;
   finally
     JSONEntrada.Free;
@@ -667,21 +649,25 @@ var
   JSONArray: TJSONArray;
 
   JSONEntrada: TJSONArray;
-  JSONConverter: TJsonDynamicConverter;
+  JSONConverter: TJSONDynConverter;
 begin
   JSONEntrada := TJSONArray.ParseJSONValue(mmEntrada4.Text) as TJSONArray;
 
   GuiaList := TObjectList<TGuiaMonitoramento>.Create;
   try
-    JSONConverter := TJsonDynamicConverter.Create;
-    JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONEntrada, GuiaList);
+    JSONConverter := TJSONDynConverter.Create;
+    JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONEntrada,
+      GuiaList);
 
     // Preenche a lista GuiaList com objetos do tipo TGuia
-    JSONConverter.ObjectListToJSONArray<TGuiaMonitoramento>(GuiaList, JSONArray); // Converte a lista de objetos para JSONArray
-    mmSaida4.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONArray.ToString).Format());
+    JSONConverter.ObjectListToJSONArray<TGuiaMonitoramento>(GuiaList,
+      JSONArray); // Converte a lista de objetos para JSONArray
+    JSONConverter.Free;
+
+    mmSaida4.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONArray.ToString)
+      .Format());
   finally
     JSONArray.Free; // Libere o JSONArray após o uso
-
     GuiaList.Free;
     JSONEntrada.Free;
   end;
