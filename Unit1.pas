@@ -5,24 +5,23 @@ interface
 uses
   Winapi.Windows,
   Winapi.Messages,
-  System.Variants,
-  System.Classes,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  System.Rtti,
   System.JSON,
   System.SysUtils,
-  System.TypInfo,
   System.Generics.Collections,
   Vcl.ComCtrls,
   DateUtils,
 
+  // FUNÇÃO PARA CONVERTER JSON
+  JSONDynamicConverter,
+
   // GUIA DTO
-  GuiaMonitoramentoDto;
+  GuiaMonitoramentoDto, System.Classes;
 
 type
   TForm1 = class(TForm)
@@ -38,19 +37,43 @@ type
     lblSaida: TLabel;
     Splitter3: TSplitter;
     lblEntrada: TLabel;
-    pnlLabelParse: TPanel;
-    Panel3: TPanel;
+    pnlHeader: TPanel;
+    pnlObjectToJSON: TPanel;
     Splitter4: TSplitter;
     Splitter5: TSplitter;
     Splitter6: TSplitter;
-    mmEntrada2: TMemo;
-    mmSaida2: TMemo;
+    mmEntrada3: TMemo;
+    mmSaida3: TMemo;
     btmConvert: TButton;
-    pnlLabelObj: TPanel;
+    pnlHeader3: TPanel;
     Label1: TLabel;
     Label2: TLabel;
+    tabParseJSONArray: TTabSheet;
+    pnlParseJSONArray: TPanel;
+    Splitter7: TSplitter;
+    Splitter8: TSplitter;
+    Splitter9: TSplitter;
+    mmEntrada2: TMemo;
+    mmSaida2: TMemo;
+    btmParseJSONArray: TButton;
+    pnlHeader2: TPanel;
+    Label3: TLabel;
+    Label4: TLabel;
+    tabObjectListToJSONArray: TTabSheet;
+    pnlObjectListToJSONArray: TPanel;
+    Splitter10: TSplitter;
+    Splitter11: TSplitter;
+    Splitter12: TSplitter;
+    mmEntrada4: TMemo;
+    mmSaida4: TMemo;
+    btmObjectListToJSONArray: TButton;
+    pnlHeader4: TPanel;
+    Label5: TLabel;
+    Label6: TLabel;
     procedure btObjToJsonClick(Sender: TObject);
     procedure btmParseClick(Sender: TObject);
+    procedure btmParseJSONArrayClick(Sender: TObject);
+    procedure btmObjectListToJSONArrayClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -79,32 +102,6 @@ type
     property Produtos: TArray<TProduto> read FProdutos write FProdutos;
   end;
 
-  // CLASSES EXEMPLO 2
-type
-  TCarro = class
-  private
-    FNome: string;
-    FModelo: string;
-  public
-    property Nome: string read FNome write FNome;
-    property Modelo: string read FModelo write FModelo;
-  end;
-
-  TMarca = class
-  private
-    FNome: string;
-    FCarros: TArray<TCarro>;
-  public
-    property Nome: string read FNome write FNome;
-    property Carros: TArray<TCarro> read FCarros write FCarros;
-  end;
-
-  // OTHER
-  TJsonDynamicConverter = class
-    procedure JSONToObject(AObject: TObject; AJSON: TJSONObject);
-    procedure ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
-  end;
-
 var
   Form1: TForm1;
 
@@ -123,9 +120,12 @@ begin
   try
     GuiaMonitoramento := TGuiaMonitoramento.Create;
     try
-      TJsonDynamicConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj); //Popula o objeto com os dados do json
+      TJsonDynamicConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj);
+
+      // Limpa a saída antes de colocar novos dados
       mmSaida.Clear;
 
+      // Popula o objeto com os dados do json
       mmSaida.Lines.Add('Guia: ');
       mmSaida.Lines.Add('GuiaId: ' + GuiaMonitoramento.GuiaId);
       mmSaida.Lines.Add('RegistroAns: ' + GuiaMonitoramento.RegistroAns);
@@ -362,6 +362,269 @@ begin
   end;
 end;
 
+procedure TForm1.btmParseJSONArrayClick(Sender: TObject);
+var
+  GuiaList: TObjectList<TGuiaMonitoramento>;
+  JSONArray: TJSONArray;
+begin
+  // Parse da string para um JsonArray
+  JSONArray := TJSONArray.ParseJSONValue(mmEntrada2.Text) as TJSONArray;
+  try
+    GuiaList := TObjectList<TGuiaMonitoramento>.Create;
+    try
+      TJsonDynamicConverter.Create.JSONArrayToObjectList<TGuiaMonitoramento>
+        (JSONArray, GuiaList);
+
+      // Limpa a saída antes de colocar novos dados
+      mmSaida2.Clear;
+
+      for var GuiaMonitoramento in GuiaList do
+      begin
+        // Popula o objeto com os dados do json
+        mmSaida2.Lines.Add('Guia: ');
+        mmSaida2.Lines.Add('GuiaId: ' + GuiaMonitoramento.GuiaId);
+        mmSaida2.Lines.Add('RegistroAns: ' + GuiaMonitoramento.RegistroAns);
+        mmSaida2.Lines.Add('TipoRegistroId: ' +
+          GuiaMonitoramento.TipoRegistroId);
+        mmSaida2.Lines.Add('VersaoTissPrestador: ' +
+          GuiaMonitoramento.VersaoTissPrestador);
+        mmSaida2.Lines.Add('FormaEnvioId: ' + GuiaMonitoramento.FormaEnvioId);
+        mmSaida2.Lines.Add('PrestadorCnesId: ' +
+          GuiaMonitoramento.PrestadorCnesId);
+        mmSaida2.Lines.Add('PrestadorIndicadorIdentificacaoId: ' +
+          GuiaMonitoramento.PrestadorIndicadorIdentificacaoId);
+        mmSaida2.Lines.Add('PrestadorCnpjCpf: ' +
+          GuiaMonitoramento.PrestadorCnpjCpf);
+        mmSaida2.Lines.Add('PrestadorMunicipioId: ' +
+          GuiaMonitoramento.PrestadorMunicipioId);
+        mmSaida2.Lines.Add('BeneficiarioCns: ' +
+          GuiaMonitoramento.BeneficiarioCns);
+        mmSaida2.Lines.Add('BeneficiarioCpf: ' +
+          GuiaMonitoramento.BeneficiarioCpf);
+        mmSaida2.Lines.Add('BeneficiarioSexoId: ' +
+          GuiaMonitoramento.BeneficiarioSexoId);
+        mmSaida2.Lines.Add('BeneficiarioDataNascimento: ' +
+          DateToStr(GuiaMonitoramento.BeneficiarioDataNascimento));
+        mmSaida2.Lines.Add('BeneficiarioMunicipioId: ' +
+          GuiaMonitoramento.BeneficiarioMunicipioId);
+        mmSaida2.Lines.Add('BeneficiarioNumeroRegistroPlano: ' +
+          GuiaMonitoramento.BeneficiarioNumeroRegistroPlano);
+        mmSaida2.Lines.Add('TipoGuiaId: ' + GuiaMonitoramento.TipoGuiaId);
+        mmSaida2.Lines.Add('OrigemGuiaId: ' + GuiaMonitoramento.OrigemGuiaId);
+        mmSaida2.Lines.Add('Competencia: ' + GuiaMonitoramento.Competencia);
+        mmSaida2.Lines.Add('NumeroGuiaPrestador: ' +
+          GuiaMonitoramento.NumeroGuiaPrestador);
+        mmSaida2.Lines.Add('NumeroGuiaOperadora: ' +
+          GuiaMonitoramento.NumeroGuiaOperadora);
+        mmSaida2.Lines.Add('IdentificadorReembolso: ' +
+          GuiaMonitoramento.IdentificadorReembolso);
+        mmSaida2.Lines.Add('IdentificacaoValorPreestabelecido: ' +
+          GuiaMonitoramento.IdentificacaoValorPreestabelecido);
+        mmSaida2.Lines.Add('GuiaSolicitacaoInternacao: ' +
+          GuiaMonitoramento.GuiaSolicitacaoInternacao);
+        mmSaida2.Lines.Add('DataSolicitacao: ' +
+          DateToStr(GuiaMonitoramento.DataSolicitacao));
+        mmSaida2.Lines.Add('NumeroGuiaSpsadtPrincipal: ' +
+          GuiaMonitoramento.NumeroGuiaSpsadtPrincipal);
+        mmSaida2.Lines.Add('DataAutorizacao: ' +
+          DateToStr(GuiaMonitoramento.DataAutorizacao));
+        mmSaida2.Lines.Add('DataRealizacao: ' +
+          DateToStr(GuiaMonitoramento.DataRealizacao));
+        mmSaida2.Lines.Add('DataProtocoloCobranca: ' +
+          DateToStr(GuiaMonitoramento.DataProtocoloCobranca));
+        mmSaida2.Lines.Add('DataPagamento: ' +
+          DateToStr(GuiaMonitoramento.DataPagamento));
+        mmSaida2.Lines.Add('DataProcessamentoGuia: ' +
+          DateToStr(GuiaMonitoramento.DataProcessamentoGuia));
+        mmSaida2.Lines.Add('DataFimPeriodo: ' +
+          DateToStr(GuiaMonitoramento.DataFimPeriodo));
+        mmSaida2.Lines.Add('DataInicialFaturamento: ' +
+          DateToStr(GuiaMonitoramento.DataInicialFaturamento));
+        mmSaida2.Lines.Add('ValorTotalInformado: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalInformado));
+        mmSaida2.Lines.Add('ValorProcessado: ' +
+          FloatToStr(GuiaMonitoramento.ValorProcessado));
+        mmSaida2.Lines.Add('ValorTotalPagoProcedimento: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalPagoProcedimento));
+        mmSaida2.Lines.Add('ValorTotalDiaria: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalDiaria));
+        mmSaida2.Lines.Add('ValorTotalTaxa: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalTaxa));
+        mmSaida2.Lines.Add('ValorTotalMaterial: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalMaterial));
+        mmSaida2.Lines.Add('ValorTotalOpme: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalOpme));
+        mmSaida2.Lines.Add('ValorTotalMedicamento: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalMedicamento));
+        mmSaida2.Lines.Add('ValorGlosaGuia: ' +
+          FloatToStr(GuiaMonitoramento.ValorGlosaGuia));
+        mmSaida2.Lines.Add('ValorPagoGuia: ' +
+          FloatToStr(GuiaMonitoramento.ValorPagoGuia));
+        mmSaida2.Lines.Add('ValorPagoFornecedor: ' +
+          FloatToStr(GuiaMonitoramento.ValorPagoFornecedor));
+        mmSaida2.Lines.Add('ValorTotalPagoTabelaPropria: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalPagoTabelaPropria));
+        mmSaida2.Lines.Add('ValorTotalPagoCoparticipacao: ' +
+          FloatToStr(GuiaMonitoramento.ValorTotalPagoCoparticipacao));
+        mmSaida2.Lines.Add('IndicacaoRecemNato: ' +
+          GuiaMonitoramento.IndicacaoRecemNato);
+        mmSaida2.Lines.Add('IndicacaoAcidente: ' +
+          GuiaMonitoramento.IndicacaoAcidente);
+        mmSaida2.Lines.Add('CaraterAtendimento: ' +
+          GuiaMonitoramento.CaraterAtendimento);
+        mmSaida2.Lines.Add('TipoInternacao: ' +
+          GuiaMonitoramento.TipoInternacao);
+        mmSaida2.Lines.Add('RegimeInternacao: ' +
+          GuiaMonitoramento.RegimeInternacao);
+        mmSaida2.Lines.Add('SaudeOcupacional: ' +
+          GuiaMonitoramento.SaudeOcupacional);
+        mmSaida2.Lines.Add('TipoFaturamento: ' +
+          GuiaMonitoramento.TipoFaturamento);
+        mmSaida2.Lines.Add('DiariaAcompanhante: ' +
+          IntToStr(GuiaMonitoramento.DiariaAcompanhante));
+        mmSaida2.Lines.Add('DiariaUti: ' +
+          IntToStr(GuiaMonitoramento.DiariaUti));
+        mmSaida2.Lines.Add('MotivoSaidaId: ' + GuiaMonitoramento.MotivoSaidaId);
+        mmSaida2.Lines.Add('CboExecutante: ' + GuiaMonitoramento.CboExecutante);
+        mmSaida2.Lines.Add('TipoConsulta: ' + GuiaMonitoramento.TipoConsulta);
+        mmSaida2.Lines.Add('RegistroAnsOperadoraIntermediaria: ' +
+          GuiaMonitoramento.RegistroAnsOperadoraIntermediaria);
+        mmSaida2.Lines.Add('TipoAtendimentoIntermediarioId: ' +
+          GuiaMonitoramento.TipoAtendimentoIntermediarioId);
+        mmSaida2.Lines.Add('TipoAtendimentoId: ' +
+          GuiaMonitoramento.TipoAtendimentoId);
+        mmSaida2.Lines.Add('RegimeAtendimentoId: ' +
+          GuiaMonitoramento.RegimeAtendimentoId);
+        mmSaida2.Lines.Add('FormasRemuneracaoId: ' +
+          GuiaMonitoramento.FormasRemuneracaoId);
+        mmSaida2.Lines.Add('ValorRemuneracaoId: ' +
+          FloatToStr(GuiaMonitoramento.ValorRemuneracaoId));
+        mmSaida2.Lines.Add('StatusAnsId: ' + GuiaMonitoramento.StatusAnsId);
+        mmSaida2.Lines.Add('GuiaPendente: ' + GuiaMonitoramento.GuiaPendente);
+        mmSaida2.Lines.Add('StatusEnviaAns: ' +
+          GuiaMonitoramento.StatusEnviaAns);
+        mmSaida2.Lines.Add('ChaveAcesso: ' + GuiaMonitoramento.ChaveAcesso);
+        mmSaida2.Lines.Add(SLineBreak);
+
+        for var FormaRemuneracao in GuiaMonitoramento.FormasRemuneracao do
+        begin
+          mmSaida2.Lines.Add('Forma Remuneração: ');
+
+          mmSaida2.Lines.Add(' Guia Forma Remuneração Id: ' +
+            FormaRemuneracao.GuiaFormaRemuneracaoId);
+          mmSaida2.Lines.Add(' Guia Id: ' + FormaRemuneracao.GuiaId);
+          mmSaida2.Lines.Add(' Forma Remuneração Id: ' +
+            FormaRemuneracao.FormaRemuneracaoId);
+          mmSaida2.Lines.Add(' Valor Remuneração: ' +
+            FloatToStr(FormaRemuneracao.ValorRemuneracao));
+
+          mmSaida2.Lines.Add(SLineBreak);
+        end;
+
+        for var DiagnosticoCid10 in GuiaMonitoramento.DiagnosticosCid10 do
+        begin
+          mmSaida2.Lines.Add('Diagnóstico CID-10: ');
+
+          mmSaida2.Lines.Add(' CID-10 Id: ' + DiagnosticoCid10.Cid10Id);
+          mmSaida2.Lines.Add(' Sequência: ' +
+            IntToStr(DiagnosticoCid10.Sequencia));
+
+          mmSaida2.Lines.Add(SLineBreak);
+        end;
+
+        for var DeclaracaoNascido in GuiaMonitoramento.DeclaracoesNascido do
+        begin
+          mmSaida2.Lines.Add('Declaração Nascido: ');
+
+          mmSaida2.Lines.Add(' Declaração Nascido Id: ' +
+            DeclaracaoNascido.DeclaracaoNascidoId);
+          mmSaida2.Lines.Add(' Guia Id: ' + DeclaracaoNascido.GuiaId);
+          mmSaida2.Lines.Add(' Sequência: ' +
+            IntToStr(DeclaracaoNascido.Sequencia));
+          mmSaida2.Lines.Add(' Numero Declaração: ' +
+            DeclaracaoNascido.NumeroDeclaracao);
+
+          mmSaida2.Lines.Add(SLineBreak);
+        end;
+
+        for var DeclaracaoObito in GuiaMonitoramento.DeclaracoesObito do
+        begin
+          mmSaida2.Lines.Add('Declaração Óbito: ');
+
+          mmSaida2.Lines.Add(' Declaração Óbito Id: ' +
+            DeclaracaoObito.DeclaracaoObitoId);
+          mmSaida2.Lines.Add(' Guia Id: ' + DeclaracaoObito.GuiaId);
+          mmSaida2.Lines.Add(' Sequência: ' +
+            IntToStr(DeclaracaoObito.Sequencia));
+          mmSaida2.Lines.Add(' Numero Declaração: ' +
+            DeclaracaoObito.NumeroDeclaracao);
+
+          mmSaida2.Lines.Add(SLineBreak);
+        end;
+
+        for var Procedimento in GuiaMonitoramento.Procedimentos do
+        begin
+          mmSaida2.Lines.Add('Procedimento: ');
+
+          mmSaida2.Lines.Add(' Procedimento Id: ' +
+            Procedimento.ProcedimentoId);
+          mmSaida2.Lines.Add(' Guia Id: ' + Procedimento.GuiaId);
+          mmSaida2.Lines.Add(' Sequência: ' + IntToStr(Procedimento.Sequencia));
+          mmSaida2.Lines.Add(' Código Tabela Monitor Id: ' +
+            Procedimento.CodigoTabelaMonitorId);
+          mmSaida2.Lines.Add(' Grupo Procedimento Id: ' +
+            Procedimento.GrupoProcedimentoId);
+          mmSaida2.Lines.Add(' Código Procedimento Id: ' +
+            Procedimento.CodigoProcedimentoId);
+          mmSaida2.Lines.Add(' Dente Id: ' + Procedimento.DenteId);
+          mmSaida2.Lines.Add(' Região Boca Id: ' + Procedimento.RegiaoBocaId);
+          mmSaida2.Lines.Add(' Dente Face Id: ' + Procedimento.DenteFaceId);
+          mmSaida2.Lines.Add(' Quantidade Informada: ' +
+            FloatToStr(Procedimento.QuantidadeInformada));
+          mmSaida2.Lines.Add(' Valor Informado: ' +
+            FloatToStr(Procedimento.ValorInformado));
+          mmSaida2.Lines.Add(' Quantidade Paga: ' +
+            FloatToStr(Procedimento.QuantidadePaga));
+          mmSaida2.Lines.Add(' Unidade Medida Id: ' +
+            Procedimento.UnidadeMedidaId);
+          mmSaida2.Lines.Add(' Valor Pago Procedimento: ' +
+            FloatToStr(Procedimento.ValorPagoProcedimento));
+          mmSaida2.Lines.Add(' Valor Pago Fornecedor: ' +
+            FloatToStr(Procedimento.ValorPagoFornecedor));
+          mmSaida2.Lines.Add(' Cnpj Fornecedor: ' +
+            Procedimento.CnpjFornecedor);
+          mmSaida2.Lines.Add(' Valor Coparticipação: ' +
+            FloatToStr(Procedimento.ValorCoparticipacao));
+
+          mmSaida2.Lines.Add(SLineBreak);
+
+          for var ItemPacote in Procedimento.ItemsPacote do
+          begin
+            mmSaida2.Lines.Add('Item Pacote: ');
+
+            mmSaida2.Lines.Add(' Item Pacote Id: ' + ItemPacote.ItemPacoteId);
+            mmSaida2.Lines.Add(' Guia Procedimento Id: ' +
+              ItemPacote.GuiaProcedimentoId);
+            mmSaida2.Lines.Add(' Código Tabela Pacote Id: ' +
+              ItemPacote.CodigoTabelaPacoteId);
+            mmSaida2.Lines.Add(' Código Procedimento: ' +
+              ItemPacote.CodigoProcedimento);
+            mmSaida2.Lines.Add(' Quantidade: ' +
+              FloatToStr(ItemPacote.Quantidade));
+
+            mmSaida2.Lines.Add(SLineBreak);
+          end;
+        end;
+      end;
+
+    finally
+      GuiaList.Free;
+    end;
+  finally
+    JSONArray.Free;
+  end;
+end;
+
 // OBJETO PARA JSON
 procedure TForm1.btObjToJsonClick(Sender: TObject);
 var
@@ -370,267 +633,57 @@ var
   JSONEntrada: TJSONObject;
 
   // Variaveis de conversão de objeto para json
-  JSON: TJSONObject;
-  SomeClass: TJsonDynamicConverter;
+  JSONObject: TJSONObject;
+  JSONConverter: TJsonDynamicConverter;
 begin
-  JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada2.Text) as TJSONObject;
+  JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada3.Text) as TJSONObject;
   try
     Loja := TLoja.Create;
     try
-      SomeClass := TJsonDynamicConverter.Create;
-      SomeClass.JSONToObject(Loja, JSONEntrada);
+      JSONConverter := TJsonDynamicConverter.Create;
+      JSONConverter.JSONToObject(Loja, JSONEntrada);
 
-      JSON := TJSONObject.Create;
-      SomeClass.ObjectToJSON(Loja, JSON);
+      JSONObject := TJSONObject.Create;
+      JSONConverter.ObjectToJSON(Loja, JSONObject);
       try
-        mmSaida2.Clear;
-        mmSaida2.Lines.Add(TJSONValue.Create.ParseJSONValue(JSON.ToString).Format());
+        mmSaida3.Clear;
+        mmSaida3.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONObject.ToString)
+          .Format());
       finally
-        JSON.Free;
+        JSONObject.Free;
       end;
     finally
       Loja.Free;
+      JSONConverter.Free;
     end;
   finally
     JSONEntrada.Free;
   end;
 end;
 
-{ TJsonDynamicConverter }
-
-procedure TJsonDynamicConverter.JSONToObject(AObject: TObject; AJSON: TJSONObject);
+procedure TForm1.btmObjectListToJSONArrayClick(Sender: TObject);
 var
-  Context: TRttiContext; // Contexto RTTI para acessar as propriedades do objeto
-  RttiType: TRttiType; // Representa o tipo do objeto usando RTTI
-  Prop: TRttiProperty; // Propriedade RTTI para cada campo no objeto
-  JsonPair: TJSONPair; // Representa um par de chave-valor no JSON
-  JsonArray: TJSONArray; // Representa um array no JSON
-  ElemClass: TClass; // Classe dos elementos no array dinâmico
-  I: integer; // Iterador de loop
-  SubObject: TObject; // Objeto auxiliar para elementos de arrays
-  ArrayValue: TValue; // Valor do array final para ser atribuído à propriedade
-  TValueArray: TArray<TValue>;
-  // Array de valores para os elementos do array dinâmico
+  GuiaList: TObjectList<TGuiaMonitoramento>;
+  JSONArray: TJSONArray;
+
+  JSONEntrada: TJSONArray;
+  JSONConverter: TJsonDynamicConverter;
 begin
-  Context := TRttiContext.Create; // Inicializa o contexto RTTI
+  JSONEntrada := TJSONArray.ParseJSONValue(mmEntrada4.Text) as TJSONArray;
+
+  GuiaList := TObjectList<TGuiaMonitoramento>.Create;
   try
-    RttiType := Context.GetType(AObject.ClassType);
-    // Obtém o tipo RTTI do objeto
+    JSONConverter := TJsonDynamicConverter.Create;
+    JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONEntrada, GuiaList);
 
-    // Itera sobre cada par chave-valor do JSON
-    for JsonPair in AJSON do
-    begin
-      // Tenta obter a propriedade do objeto correspondente à chave do JSON
-      Prop := RttiType.GetProperty(JsonPair.JsonString.Value);
-
-      // Verifica se a propriedade existe no objeto
-      if Assigned(Prop) then
-      begin
-        // Verifica se a propriedade é um array dinâmico e se o valor no JSON é um array
-        if (Prop.PropertyType.TypeKind = tkDynArray) and
-          (JsonPair.JsonValue is TJSONArray) then
-        begin
-          JsonArray := TJSONArray(JsonPair.JsonValue);
-          // Converte o valor JSON para TJSONArray
-          SetLength(TValueArray, JsonArray.Count);
-          // Define o tamanho do array com base na quantidade de itens do JSON
-
-          // Obtém a classe dos elementos do array dinâmico
-          ElemClass := (Prop.PropertyType as TRttiDynamicArrayType)
-            .ElementType.AsInstance.MetaclassType;
-
-          // Itera sobre os itens do array no JSON
-          for I := 0 to JsonArray.Count - 1 do
-          begin
-            // Se o item do array no JSON for um objeto, processa recursivamente
-            if JsonArray.Items[I] is TJSONObject then
-            begin
-              SubObject := ElemClass.Create;
-              // Cria uma instância do tipo de elemento do array
-              try
-                // Chama recursivamente para preencher o subobjeto com o JSON
-                JSONToObject(SubObject, JsonArray.Items[I] as TJSONObject);
-                TValueArray[I] := TValue.From(SubObject);
-                // Armazena o subobjeto no array
-              except
-                SubObject.Free; // Libera o subobjeto em caso de erro
-                raise;
-              end;
-            end
-            else
-              raise Exception.CreateFmt
-                ('Array item at index %d is not a valid JSON object.', [I]);
-            // Erro se o item do array não for um objeto JSON
-          end;
-
-          // Converte o array de valores para um TValue e o atribui à propriedade do objeto
-          ArrayValue := TValue.FromArray(Prop.PropertyType.Handle, TValueArray);
-          Prop.SetValue(AObject, ArrayValue);
-        end
-        else
-        begin
-          // Lida com propriedades de tipos simples (strings, números, etc.)
-
-          // Verifica se o valor do campo no JSON é null
-          if JsonPair.JsonValue.Null then
-            Prop.SetValue(AObject, TValue.Empty) // Atribui um valor vazio
-          else if JsonPair.JsonValue is TJSONNumber then
-          begin
-            // Verifica se a propriedade é do tipo inteiro
-            if Prop.PropertyType.Handle = TypeInfo(integer) then
-              Prop.SetValue(AObject,
-                TValue.From<integer>(TJSONNumber(JsonPair.JsonValue).AsInt))
-              // Verifica se a propriedade é do tipo double (decimal)
-            else if Prop.PropertyType.Handle = TypeInfo(double) then
-              Prop.SetValue(AObject,
-                TValue.From<double>(TJSONNumber(JsonPair.JsonValue).AsDouble))
-            else
-              raise Exception.CreateFmt
-                ('Tipo numérico não suportado para a propriedade "%s".',
-                [Prop.Name]);
-          end
-          else if JsonPair.JsonValue is TJSONTrue then
-            Prop.SetValue(AObject, TValue.From<Boolean>(True))
-            // Atribui valor booleano True
-          else if JsonPair.JsonValue is TJSONFalse then
-            Prop.SetValue(AObject, TValue.From<Boolean>(False))
-            // Atribui valor booleano False
-          else if JsonPair.JsonValue is TJSONString then
-          begin
-            // Verifica se a propriedade é uma data
-            if Prop.PropertyType.Handle = TypeInfo(TDate) then
-              Prop.SetValue(AObject,
-                TValue.From<TDate>(ISO8601ToDate(TJSONString(JsonPair.JsonValue)
-                .Value, False)))
-              // Verifica se a propriedade é um DateTime
-            else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
-              Prop.SetValue(AObject,
-                TValue.From<TDateTime>
-                (ISO8601ToDate(TJSONString(JsonPair.JsonValue).Value, True)))
-            else
-              // Atribui o valor como string
-              Prop.SetValue(AObject,
-                TValue.From<string>(TJSONString(JsonPair.JsonValue).Value));
-          end
-          else
-            raise Exception.CreateFmt
-              ('Tipo de JSON não suportado para a propriedade "%s".',
-              [Prop.Name]); // Erro se o tipo JSON não for suportado
-        end;
-      end;
-    end;
+    // Preenche a lista GuiaList com objetos do tipo TGuia
+    JSONConverter.ObjectListToJSONArray<TGuiaMonitoramento>(GuiaList, JSONArray); // Converte a lista de objetos para JSONArray
+    mmSaida4.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONArray.ToString).Format());
   finally
-    Context.Free; // Libera o contexto RTTI ao final
-  end;
-end;
+    JSONArray.Free; // Libere o JSONArray após o uso
 
-procedure TJsonDynamicConverter.ObjectToJSON(AObject: TObject; var AJSON: TJSONObject);
-var
-  Context: TRttiContext; // Contexto para RTTI
-  RttiType: TRttiType; // Tipo RTTI do objeto
-  Prop: TRttiProperty; // Propriedade atual do objeto
-  PropValue: TValue; // Valor da propriedade atual
-  JsonValue: TJSONValue; // Valor JSON temporário (não utilizado neste código)
-  SubJSON: TJSONObject; // Objeto JSON para propriedades que são objetos
-  JsonArray: TJSONArray; // Array JSON para propriedades que são arrays dinâmicos
-  DynArray: TRttiDynamicArrayType; // Tipo dinâmico da propriedade de array
-  I: integer; // Contador de loop
-  DynArrayValue: TValue; // Valor de cada elemento do array dinâmico
-begin
-  // Cria o contexto RTTI para acessar informações sobre o tipo do objeto
-  Context := TRttiContext.Create;
-  try
-    // Obtém o tipo RTTI do objeto passado como parâmetro
-    RttiType := Context.GetType(AObject.ClassType);
-
-    // Itera pelas propriedades do objeto utilizando RTTI
-    for Prop in RttiType.GetProperties do
-    begin
-      // Verifica se a propriedade é legível (possui método getter)
-      if Prop.IsReadable then
-      begin
-        // Obtém o valor atual da propriedade
-        PropValue := Prop.GetValue(AObject);
-
-        // Lida com propriedades que são arrays dinâmicos
-        if (Prop.PropertyType.TypeKind = tkDynArray) then
-        begin
-          // Obtém o tipo da propriedade como um array dinâmico
-          DynArray := TRttiDynamicArrayType(Prop.PropertyType);
-          // Cria um novo array JSON para armazenar os elementos do array dinâmico
-          JsonArray := TJSONArray.Create;
-
-          // Itera pelos elementos do array dinâmico
-          for I := 0 to PropValue.GetArrayLength - 1 do
-          begin
-            // Obtém o valor de cada elemento do array
-            DynArrayValue := PropValue.GetArrayElement(I);
-            // Verifica se o elemento é um objeto
-            if DynArrayValue.IsObject then
-            begin
-              // Cria um novo objeto JSON para o elemento
-              SubJSON := TJSONObject.Create;
-              // Chama recursivamente a função para converter o objeto em JSON
-              ObjectToJSON(DynArrayValue.AsObject, SubJSON);
-              // Adiciona o objeto JSON ao array JSON
-              JsonArray.AddElement(SubJSON);
-            end
-            // Verifica se o elemento é um número inteiro
-            else if DynArrayValue.Kind = tkInteger then
-              JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsInteger))
-            // Verifica se o elemento é um número em ponto flutuante
-            else if DynArrayValue.Kind = tkFloat then
-              JsonArray.AddElement(TJSONNumber.Create(DynArrayValue.AsExtended))
-            // Verifica se o elemento é uma string
-            else if DynArrayValue.Kind = tkString then
-              JsonArray.AddElement(TJSONString.Create(DynArrayValue.AsString));
-          end;
-
-          // Adiciona o array JSON à propriedade correspondente no objeto JSON final
-          AJSON.AddPair(Prop.Name, JsonArray);
-        end
-        // Lida com propriedades que são objetos aninhados
-        else if PropValue.IsObject then
-        begin
-          // Cria um novo objeto JSON para a propriedade aninhada
-          SubJSON := TJSONObject.Create;
-          // Chama recursivamente a função para converter o objeto em JSON
-          ObjectToJSON(PropValue.AsObject, SubJSON);
-          // Adiciona o objeto JSON aninhado ao objeto JSON final
-          AJSON.AddPair(Prop.Name, SubJSON);
-        end
-        // Lida com propriedades que são valores simples
-        else if PropValue.Kind = tkInteger then
-          AJSON.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsInteger))
-        else if PropValue.Kind = tkFloat then
-          AJSON.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsExtended))
-        else if PropValue.Kind = tkUString then
-          AJSON.AddPair(Prop.Name, TJSONString.Create(PropValue.AsString))
-        else if PropValue.Kind = tkEnumeration then
-        begin
-          // Lida com valores booleanos
-          if PropValue.TypeInfo = TypeInfo(Boolean) then
-            AJSON.AddPair(Prop.Name, TJSONBool.Create(PropValue.AsBoolean))
-          else
-            AJSON.AddPair(Prop.Name, TJSONString.Create(PropValue.ToString));
-        end
-        // Lida com registros (como TDate e TDateTime)
-        else if PropValue.Kind = tkRecord then
-        begin
-          // Verifica se a propriedade é do tipo TDate e a converte
-          if Prop.PropertyType.Handle = TypeInfo(TDate) then
-            AJSON.AddPair(Prop.Name,
-              TJSONString.Create(DateToISO8601(PropValue.AsType<TDate>, False)))
-          // Verifica se a propriedade é do tipo TDateTime e a converte
-          else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
-            AJSON.AddPair(Prop.Name,
-              TJSONString.Create(DateToISO8601(PropValue.AsType<TDateTime>, True)));
-        end;
-      end;
-    end;
-  finally
-    // Libera o contexto RTTI
-    Context.Free;
+    GuiaList.Free;
+    JSONEntrada.Free;
   end;
 end;
 
