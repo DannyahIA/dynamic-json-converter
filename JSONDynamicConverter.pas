@@ -44,6 +44,16 @@ type
     // Check Json Value Type
     class procedure CheckJSONValueType(JsonPair: TJSONPair; Prop: TRttiProperty;
       AObject: TObject);
+    class procedure HandleDynamicArray(JsonPair: TJSONPair; Prop: TRttiProperty;
+      AObject: TObject); static;
+    class procedure HandleObject(JsonPair: TJSONPair; Prop: TRttiProperty;
+      AObject: TObject); static;
+    class procedure HandleDynamicArrayToJSON(Prop: TRttiProperty;
+      PropValue: TValue; var AJSONObject: TJSONObject); static;
+    class procedure HandleObjectToJSON(Prop: TRttiProperty; PropValue: TValue;
+      var AJSONObject: TJSONObject); static;
+    class procedure HandleSimpleValueToJSON(Prop: TRttiProperty;
+      PropValue: TValue; var AJSONObject: TJSONObject); static;
   end;
 
 implementation
@@ -54,11 +64,13 @@ implementation
 class procedure TJSONDynConverter.JSONStringToObject(AJSONString: string;
   AObject: TObject);
 begin
-  var
-  AJSONObject := TJSONObject.ParseJSONValue(AJSONString) as TJSONObject;
+  // Faz o parsing da string JSON para um objeto JSON (TJSONObject)
+  var AJSONObject := TJSONObject.ParseJSONValue(AJSONString) as TJSONObject;
   try
+    // Chama a função para converter o objeto JSON para o objeto Delphi
     JSONToObject(AJSONObject, AObject);
   finally
+    // Libera a memória do objeto JSON após o uso
     AJSONObject.Free;
   end;
 end;
@@ -71,18 +83,12 @@ var
   RttiType: TRttiType; // Representa o tipo do objeto usando RTTI
   Prop: TRttiProperty; // Propriedade RTTI para cada campo no objeto
   JsonPair: TJSONPair; // Representa um par de chave-valor no JSON
-  JSONArray: TJSONArray; // Representa um array no JSON
-  ElemClass: TClass; // Classe dos elementos no array dinâmico
-  I: integer; // Iterador de loop
-  SubObject: TObject; // Objeto auxiliar para elementos de arrays
-  ArrayValue: TValue; // Valor do array final para ser atribuído à propriedade
-  TValueArray: TArray<TValue>;
-  // Array de valores para os elementos do array dinâmico
 begin
-  Context := TRttiContext.Create; // Inicializa o contexto RTTI
+  // Inicializa o contexto RTTI
+  Context := TRttiContext.Create;
   try
-    RttiType := Context.GetType(AObject.ClassType);
     // Obtém o tipo RTTI do objeto
+    RttiType := Context.GetType(AObject.ClassType);
 
     // Itera sobre cada par chave-valor do JSON
     for JsonPair in AJSONObject do
@@ -93,56 +99,22 @@ begin
       // Verifica se a propriedade existe no objeto
       if Assigned(Prop) then
       begin
-        // Verifica se a propriedade é um array dinâmico e se o valor no JSON é um array
-        if (Prop.PropertyType.TypeKind = tkDynArray) and
-          (JsonPair.JsonValue is TJSONArray) then
-        begin
-          JSONArray := TJSONArray(JsonPair.JsonValue);
-          // Converte o valor JSON para TJSONArray
-          SetLength(TValueArray, JSONArray.Count);
-          // Define o tamanho do array com base na quantidade de itens do JSON
-
-          // Obtém a classe dos elementos do array dinâmico
-          ElemClass := (Prop.PropertyType as TRttiDynamicArrayType)
-            .ElementType.AsInstance.MetaclassType;
-
-          // Itera sobre os itens do array no JSON
-          for I := 0 to JSONArray.Count - 1 do
-          begin
-            // Se o item do array no JSON for um objeto, processa recursivamente
-            if JSONArray.Items[I] is TJSONObject then
-            begin
-              SubObject := ElemClass.Create;
-              // Cria uma instância do tipo de elemento do array
-              try
-                // Chama recursivamente para preencher o subobjeto com o JSON
-                JSONToObject(JSONArray.Items[I] as TJSONObject, SubObject);
-                TValueArray[I] := TValue.From(SubObject);
-                // Armazena o subobjeto no array
-              except
-                SubObject.Free; // Libera o subobjeto em caso de erro
-                raise;
-              end;
-            end
-            else
-              raise Exception.CreateFmt
-                ('Array item at index %d is not a valid JSON object.', [I]);
-            // Erro se o item do array não for um objeto JSON
-          end;
-
-          // Converte o array de valores para um TValue e o atribui à propriedade do objeto
-          ArrayValue := TValue.FromArray(Prop.PropertyType.Handle, TValueArray);
-          Prop.SetValue(AObject, ArrayValue);
-        end
+        // Verifica se a propriedade é um array dinâmico e o valor no JSON é um array
+        if (Prop.PropertyType.TypeKind = tkDynArray) and (JsonPair.JsonValue is TJSONArray) then
+          // Chama a função para lidar com arrays dinâmicos
+          HandleDynamicArray(JsonPair, Prop, AObject)
+        // Verifica se o valor no JSON é um objeto aninhado
+        else if JsonPair.JsonValue is TJSONObject then
+          // Chama a função para lidar com objetos aninhados
+          HandleObject(JsonPair, Prop, AObject)
         else
-        begin
+          // Chama a função para lidar com tipos simples (strings, números, etc.)
           CheckJSONValueType(JsonPair, Prop, AObject);
-          // Lida com propriedades de tipos simples (strings, números, etc.)
-        end;
       end;
     end;
   finally
-    Context.Free; // Libera o contexto RTTI ao final
+    // Libera o contexto RTTI ao final
+    Context.Free;
   end;
 end;
 
@@ -150,14 +122,16 @@ end;
 class procedure TJSONDynConverter.JSONStringToObjectList<T>(AJSONString: string;
   AObjectList: TObjectList<T>);
 var
-  I: integer;
-  SubObject: T;
+  I: integer;       // Variável para o loop
+  SubObject: T;     // Variável para armazenar cada objeto criado a partir do JSON
 begin
-  var
-  AJSONArray := TJSONObject.ParseJSONValue(AJSONString) as TJSONArray;
+  // Faz o parsing da string JSON para um array JSON (TJSONArray)
+  var AJSONArray := TJSONObject.ParseJSONValue(AJSONString) as TJSONArray;
   try
+    // Converte o array JSON em uma lista de objetos
     JSONArrayToObjectList<T>(AJSONArray, AObjectList);
   finally
+    // Libera a memória do array JSON após o uso
     AJSONArray.Free;
   end;
 end;
@@ -166,28 +140,34 @@ end;
 class procedure TJSONDynConverter.JSONArrayToObjectList<T>(AJSONArray: TJSONArray;
   AObjectList: TObjectList<T>);
 var
-  I: integer;
-  SubObject: T;
+  I: integer;       // Variável para iterar pelos itens do array
+  SubObject: T;     // Variável para armazenar o objeto criado para cada item do array
 begin
-  // Limpa a lista para adicionar novos objetos
+  // Limpa a lista para garantir que estará vazia antes de adicionar novos objetos
   AObjectList.Clear;
 
-  // Itera pelos itens do JSON array
+  // Itera sobre cada item do array JSON
   for I := 0 to AJSONArray.Count - 1 do
   begin
+    // Verifica se o item atual do array é um objeto JSON (TJSONObject)
     if AJSONArray.Items[I] is TJSONObject then
     begin
-      SubObject := T.Create; // Cria o objeto do tipo T (classe genérica)
+      // Cria um novo objeto do tipo genérico T
+      SubObject := T.Create;
       try
+        // Converte o item JSON para o objeto Delphi utilizando JSONToObject
         JSONToObject(AJSONArray.Items[I] as TJSONObject, SubObject);
-        // Converte o JSON para o objeto
-        AObjectList.Add(SubObject); // Adiciona o objeto à lista
+        // Adiciona o objeto convertido à lista de objetos
+        AObjectList.Add(SubObject);
       except
-        SubObject.Free; // Libera o objeto em caso de erro
+        // Libera a memória do objeto caso ocorra algum erro durante a conversão
+        SubObject.Free;
+        // Relança a exceção para o tratamento apropriado
         raise;
       end;
     end
     else
+      // Lança uma exceção se o item no array não for um TJSONObject
       raise Exception.CreateFmt
         ('Item no índice %d não é um objeto JSON válido.', [I]);
   end;
@@ -199,112 +179,41 @@ end;
 class procedure TJSONDynConverter.ObjectToJSONObject(AObject: TObject;
   var AJSONObject: TJSONObject);
 var
-  Context: TRttiContext; // Contexto para RTTI
-  RttiType: TRttiType; // Tipo RTTI do objeto
-  Prop: TRttiProperty; // Propriedade atual do objeto
-  PropValue: TValue; // Valor da propriedade atual
-  SubJSON: TJSONObject; // Objeto JSON para propriedades que são objetos
-  JSONArray: TJSONArray;
-  // Array JSON para propriedades que são arrays dinâmicos
-  I: integer; // Contador de loop
-  DynArrayValue: TValue; // Valor de cada elemento do array dinâmico
+  Context: TRttiContext; // Contexto RTTI para acessar metadados do objeto
+  RttiType: TRttiType; // Tipo RTTI do objeto atual
+  Prop: TRttiProperty; // Propriedade do objeto sendo iterada
+  PropValue: TValue; // Valor da propriedade sendo processada
 begin
-  // Cria o contexto RTTI para acessar informações sobre o tipo do objeto
+  // Cria um contexto RTTI para acessar informações sobre o objeto
   Context := TRttiContext.Create;
   try
-    // Obtém o tipo RTTI do objeto passado como parâmetro
+    // Obtém o tipo RTTI do objeto passado (classe do objeto)
     RttiType := Context.GetType(AObject.ClassType);
 
     // Itera pelas propriedades do objeto utilizando RTTI
     for Prop in RttiType.GetProperties do
     begin
-      // Verifica se a propriedade é legível (possui método getter)
+      // Verifica se a propriedade tem um método getter (é legível)
       if Prop.IsReadable then
       begin
         // Obtém o valor atual da propriedade
         PropValue := Prop.GetValue(AObject);
 
-        // Lida com propriedades que são arrays dinâmicos
-        if (Prop.PropertyType.TypeKind = tkDynArray) then
-        begin
-          // Cria um novo array JSON para armazenar os elementos do array dinâmico
-          JSONArray := TJSONArray.Create;
-
-          // Itera pelos elementos do array dinâmico
-          for I := 0 to PropValue.GetArrayLength - 1 do
-          begin
-            // Obtém o valor de cada elemento do array
-            DynArrayValue := PropValue.GetArrayElement(I);
-            // Verifica se o elemento é um objeto
-            if DynArrayValue.IsObject then
-            begin
-              // Cria um novo objeto JSON para o elemento
-              SubJSON := TJSONObject.Create;
-              // Chama recursivamente a função para converter o objeto em JSON
-              ObjectToJSONObject(DynArrayValue.AsObject, SubJSON);
-              // Adiciona o objeto JSON ao array JSON
-              JSONArray.AddElement(SubJSON);
-            end
-            // Verifica se o elemento é um número inteiro
-            else if DynArrayValue.Kind = tkInteger then
-              JSONArray.AddElement(TJSONNumber.Create(DynArrayValue.AsInteger))
-              // Verifica se o elemento é um número em ponto flutuante
-            else if DynArrayValue.Kind = tkFloat then
-              JSONArray.AddElement(TJSONNumber.Create(DynArrayValue.AsExtended))
-              // Verifica se o elemento é uma string
-            else if DynArrayValue.Kind = tkString then
-              JSONArray.AddElement(TJSONString.Create(DynArrayValue.AsString));
-          end;
-
-          // Adiciona o array JSON à propriedade correspondente no objeto JSON final
-          AJSONObject.AddPair(Prop.Name, JSONArray);
-        end
-        // Lida com propriedades que são objetos aninhados
+        // Verifica se a propriedade é um array dinâmico
+        if Prop.PropertyType.TypeKind = tkDynArray then
+          // Chama função para lidar com arrays dinâmicos
+          HandleDynamicArrayToJSON(Prop, PropValue, AJSONObject)
+        // Verifica se a propriedade é um objeto
         else if PropValue.IsObject then
-        begin
-          // Cria um novo objeto JSON para a propriedade aninhada
-          SubJSON := TJSONObject.Create;
-          // Chama recursivamente a função para converter o objeto em JSON
-          ObjectToJSONObject(PropValue.AsObject, SubJSON);
-          // Adiciona o objeto JSON aninhado ao objeto JSON final
-          AJSONObject.AddPair(Prop.Name, SubJSON);
-        end
-        // Lida com propriedades que são valores simples
-        else if PropValue.Kind = tkInteger then
-          AJSONObject.AddPair(Prop.Name,
-            TJSONNumber.Create(PropValue.AsInteger))
-        else if PropValue.Kind = tkFloat then
-          AJSONObject.AddPair(Prop.Name,
-            TJSONNumber.Create(PropValue.AsExtended))
-        else if PropValue.Kind = tkUString then
-          AJSONObject.AddPair(Prop.Name, TJSONString.Create(PropValue.AsString))
-        else if PropValue.Kind = tkEnumeration then
-        begin
-          // Lida com valores booleanos
-          if PropValue.TypeInfo = TypeInfo(Boolean) then
-            AJSONObject.AddPair(Prop.Name,
-              TJSONBool.Create(PropValue.AsBoolean))
-          else
-            AJSONObject.AddPair(Prop.Name,
-              TJSONString.Create(PropValue.ToString));
-        end
-        // Lida com registros (como TDate e TDateTime)
-        else if PropValue.Kind = tkRecord then
-        begin
-          // Verifica se a propriedade é do tipo TDate e a converte
-          if Prop.PropertyType.Handle = TypeInfo(TDate) then
-            AJSONObject.AddPair(Prop.Name,
-              TJSONString.Create(DateToISO8601(PropValue.AsType<TDate>, False)))
-            // Verifica se a propriedade é do tipo TDateTime e a converte
-          else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
-            AJSONObject.AddPair(Prop.Name,
-              TJSONString.Create
-              (DateToISO8601(PropValue.AsType<TDateTime>, True)));
-        end;
+          // Chama função para lidar com objetos aninhados
+          HandleObjectToJSON(Prop, PropValue, AJSONObject)
+        // Caso contrário, lida com propriedades simples (inteiros, strings, etc.)
+        else
+          HandleSimpleValueToJSON(Prop, PropValue, AJSONObject);
       end;
     end;
   finally
-    // Libera o contexto RTTI
+    // Libera o contexto RTTI após o processamento
     Context.Free;
   end;
 end;
@@ -327,7 +236,77 @@ begin
   end;
 end;
 
-{ --------------------------- UTILS --------------------------- }
+{ -------------------------------- UTILS ------------------------------- }
+
+{ --------------------------- JSON TO OBJECT --------------------------- }
+
+{ HandleObject }
+class procedure TJSONDynConverter.HandleObject(JsonPair: TJSONPair;
+  Prop: TRttiProperty; AObject: TObject);
+var
+  SubObject: TObject; // Objeto auxiliar para instanciar a classe aninhada
+begin
+  // Cria uma instância do tipo do objeto aninhado
+  SubObject := Prop.PropertyType.AsInstance.MetaclassType.Create;
+  try
+    // Chama recursivamente para preencher o subobjeto com o JSON
+    JSONToObject(JsonPair.JsonValue as TJSONObject, SubObject);
+    // Atribui o subobjeto à propriedade do objeto principal
+    Prop.SetValue(AObject, SubObject);
+  except
+    // Libera o subobjeto em caso de erro
+    SubObject.Free;
+    raise;
+  end;
+end;
+
+{ HandleDynamicArray }
+class procedure TJSONDynConverter.HandleDynamicArray(JsonPair: TJSONPair;
+  Prop: TRttiProperty; AObject: TObject);
+var
+  JSONArray: TJSONArray; // Array no JSON
+  ElemClass: TClass; // Classe dos elementos do array dinâmico
+  I: integer; // Iterador do loop
+  SubObject: TObject; // Objeto auxiliar para criar instâncias dos elementos do array
+  TValueArray: TArray<TValue>; // Array de valores para os elementos do array dinâmico
+  ArrayValue: TValue; // Valor final que será atribuído à propriedade do objeto
+begin
+  // Converte o valor JSON para TJSONArray
+  JSONArray := TJSONArray(JsonPair.JsonValue);
+  // Define o tamanho do array dinâmico com base no tamanho do array JSON
+  SetLength(TValueArray, JSONArray.Count);
+
+  // Obtém a classe dos elementos do array dinâmico
+  ElemClass := (Prop.PropertyType as TRttiDynamicArrayType).ElementType.AsInstance.MetaclassType;
+
+  // Itera sobre os itens do array no JSON
+  for I := 0 to JSONArray.Count - 1 do
+  begin
+    // Verifica se o item do array no JSON é um objeto JSON
+    if JSONArray.Items[I] is TJSONObject then
+    begin
+      // Cria uma instância do tipo de elemento do array
+      SubObject := ElemClass.Create;
+      try
+        // Chama recursivamente para preencher o subobjeto com o JSON
+        JSONToObject(JSONArray.Items[I] as TJSONObject, SubObject);
+        // Armazena o subobjeto no array de valores
+        TValueArray[I] := TValue.From(SubObject);
+      except
+        // Libera o subobjeto em caso de erro
+        SubObject.Free;
+        raise;
+      end;
+    end
+    else
+      // Erro se o item do array não for um objeto JSON
+      raise Exception.CreateFmt('Array item at index %d is not a valid JSON object.', [I]);
+  end;
+
+  // Converte o array de valores para um TValue e o atribui à propriedade do objeto
+  ArrayValue := TValue.FromArray(Prop.PropertyType.Handle, TValueArray);
+  Prop.SetValue(AObject, ArrayValue);
+end;
 
 { CheckValueType }
 class procedure TJSONDynConverter.CheckJSONValueType(JsonPair: TJSONPair;
@@ -335,48 +314,134 @@ class procedure TJSONDynConverter.CheckJSONValueType(JsonPair: TJSONPair;
 begin
   // Verifica se o valor do campo no JSON é null
   if JsonPair.JsonValue.Null then
-    Prop.SetValue(AObject, TValue.Empty) // Atribui um valor vazio
+    // Atribui um valor vazio se o JSON contiver um valor nulo
+    Prop.SetValue(AObject, TValue.Empty)
   else if JsonPair.JsonValue is TJSONNumber then
   begin
-    // Verifica se a propriedade é do tipo inteiro
+    // Verifica se a propriedade é um número inteiro
     if Prop.PropertyType.Handle = TypeInfo(integer) then
-      Prop.SetValue(AObject,
-        TValue.From<integer>(TJSONNumber(JsonPair.JsonValue).AsInt))
-      // Verifica se a propriedade é do tipo double (decimal)
+      Prop.SetValue(AObject, TValue.From<integer>(TJSONNumber(JsonPair.JsonValue).AsInt))
+    // Verifica se a propriedade é um número decimal
     else if Prop.PropertyType.Handle = TypeInfo(double) then
-      Prop.SetValue(AObject, TValue.From<double>(TJSONNumber(JsonPair.JsonValue)
-        .AsDouble))
+      Prop.SetValue(AObject, TValue.From<double>(TJSONNumber(JsonPair.JsonValue).AsDouble))
     else
-      raise Exception.CreateFmt
-        ('Tipo numérico não suportado para a propriedade "%s".', [Prop.Name]);
+      // Gera um erro se o tipo numérico não for suportado
+      raise Exception.CreateFmt('Tipo numérico não suportado para a propriedade "%s".', [Prop.Name]);
   end
   else if JsonPair.JsonValue is TJSONTrue then
+    // Atribui o valor booleano True
     Prop.SetValue(AObject, TValue.From<Boolean>(True))
-    // Atribui valor booleano True
   else if JsonPair.JsonValue is TJSONFalse then
+    // Atribui o valor booleano False
     Prop.SetValue(AObject, TValue.From<Boolean>(False))
-    // Atribui valor booleano False
   else if JsonPair.JsonValue is TJSONString then
   begin
     // Verifica se a propriedade é uma data
     if Prop.PropertyType.Handle = TypeInfo(TDate) then
-      Prop.SetValue(AObject,
-        TValue.From<TDate>(ISO8601ToDate(TJSONString(JsonPair.JsonValue)
-        .Value, False)))
-      // Verifica se a propriedade é um DateTime
+      Prop.SetValue(AObject, TValue.From<TDate>(ISO8601ToDate(TJSONString(JsonPair.JsonValue).Value, False)))
+    // Verifica se a propriedade é um DateTime
     else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
-      Prop.SetValue(AObject,
-        TValue.From<TDateTime>(ISO8601ToDate(TJSONString(JsonPair.JsonValue)
-        .Value, True)))
+      Prop.SetValue(AObject, TValue.From<TDateTime>(ISO8601ToDate(TJSONString(JsonPair.JsonValue).Value, True)))
     else
       // Atribui o valor como string
-      Prop.SetValue(AObject,
-        TValue.From<string>(TJSONString(JsonPair.JsonValue).Value));
+      Prop.SetValue(AObject, TValue.From<string>(TJSONString(JsonPair.JsonValue).Value));
   end
   else
-    raise Exception.CreateFmt
-      ('Tipo de JSON não suportado para a propriedade "%s".', [Prop.Name]);
-  // Erro se o tipo JSON não for suportado
+    // Gera um erro se o tipo JSON não for suportado
+    raise Exception.CreateFmt('Tipo de JSON não suportado para a propriedade "%s".', [Prop.Name]);
+end;
+
+{ --------------------------- OBJECT TO JSON --------------------------- }
+
+{ HandleObjectToJSON }
+class procedure TJSONDynConverter.HandleObjectToJSON(Prop: TRttiProperty;
+  PropValue: TValue; var AJSONObject: TJSONObject);
+var
+  SubJSON: TJSONObject; // Subobjeto JSON para armazenar o valor do objeto aninhado
+begin
+  // Cria um objeto JSON para armazenar o conteúdo do objeto aninhado
+  SubJSON := TJSONObject.Create;
+  // Converte o objeto aninhado chamando recursivamente ObjectToJSONObject
+  ObjectToJSONObject(PropValue.AsObject, SubJSON);
+  // Adiciona o subobjeto JSON ao objeto JSON principal
+  AJSONObject.AddPair(Prop.Name, SubJSON);
+end;
+
+{ HandleDynamicArrayToJSON }
+class procedure TJSONDynConverter.HandleDynamicArrayToJSON(Prop: TRttiProperty;
+  PropValue: TValue; var AJSONObject: TJSONObject);
+var
+  JSONArray: TJSONArray; // Array JSON para armazenar os valores
+  I: integer; // Contador de loop para iterar sobre os elementos do array
+  DynArrayValue: TValue; // Valor de cada elemento do array dinâmico
+  SubJSON: TJSONObject; // Subobjeto JSON para armazenar objetos dentro do array
+begin
+  // Cria um array JSON para armazenar os elementos do array dinâmico
+  JSONArray := TJSONArray.Create;
+
+  // Itera pelos elementos do array dinâmico
+  for I := 0 to PropValue.GetArrayLength - 1 do
+  begin
+    // Obtém o valor de cada elemento do array
+    DynArrayValue := PropValue.GetArrayElement(I);
+
+    // Verifica se o elemento do array é um objeto
+    if DynArrayValue.IsObject then
+    begin
+      // Cria um objeto JSON para o elemento
+      SubJSON := TJSONObject.Create;
+      // Converte o objeto chamando recursivamente ObjectToJSONObject
+      ObjectToJSONObject(DynArrayValue.AsObject, SubJSON);
+      // Adiciona o objeto JSON ao array
+      JSONArray.AddElement(SubJSON);
+    end
+    // Caso o elemento seja um inteiro
+    else if DynArrayValue.Kind = tkInteger then
+      JSONArray.AddElement(TJSONNumber.Create(DynArrayValue.AsInteger))
+    // Caso o elemento seja um número de ponto flutuante
+    else if DynArrayValue.Kind = tkFloat then
+      JSONArray.AddElement(TJSONNumber.Create(DynArrayValue.AsExtended))
+    // Caso o elemento seja uma string
+    else if DynArrayValue.Kind = tkString then
+      JSONArray.AddElement(TJSONString.Create(DynArrayValue.AsString));
+  end;
+
+  // Adiciona o array JSON ao objeto JSON principal
+  AJSONObject.AddPair(Prop.Name, JSONArray);
+end;
+
+{ HandleSimpleValueToJSON }
+class procedure TJSONDynConverter.HandleSimpleValueToJSON(Prop: TRttiProperty;
+  PropValue: TValue; var AJSONObject: TJSONObject);
+begin
+  // Caso o valor seja um número inteiro
+  if PropValue.Kind = tkInteger then
+    AJSONObject.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsInteger))
+  // Caso o valor seja um número de ponto flutuante
+  else if PropValue.Kind = tkFloat then
+    AJSONObject.AddPair(Prop.Name, TJSONNumber.Create(PropValue.AsExtended))
+  // Caso o valor seja uma string
+  else if PropValue.Kind = tkUString then
+    AJSONObject.AddPair(Prop.Name, TJSONString.Create(PropValue.AsString))
+  // Lida com valores de enumeração (como booleanos)
+  else if PropValue.Kind = tkEnumeration then
+  begin
+    // Caso seja um valor booleano
+    if PropValue.TypeInfo = TypeInfo(Boolean) then
+      AJSONObject.AddPair(Prop.Name, TJSONBool.Create(PropValue.AsBoolean))
+    else
+      AJSONObject.AddPair(Prop.Name, TJSONString.Create(PropValue.ToString));
+  end
+  // Lida com tipos de registro, como TDate e TDateTime
+  else if PropValue.Kind = tkRecord then
+  begin
+    // Caso a propriedade seja do tipo TDate
+    if Prop.PropertyType.Handle = TypeInfo(TDate) then
+      AJSONObject.AddPair(Prop.Name, TJSONString.Create(DateToISO8601(PropValue.AsType<TDate>, False)))
+    // Caso a propriedade seja do tipo TDateTime
+    else if Prop.PropertyType.Handle = TypeInfo(TDateTime) then
+      AJSONObject.AddPair(Prop.Name, TJSONString.Create(DateToISO8601(PropValue.AsType<TDateTime>, True)));
+  end;
 end;
 
 end.
