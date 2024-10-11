@@ -348,7 +348,7 @@ var
   JSONArray: TJSONArray;
 begin
   // Parse da string para um JsonArray
-  JSONArray := TJSONArray.ParseJSONValue(mmEntrada2.Text) as TJSONArray;
+  JSONArray := TJSONObject.ParseJSONValue(mmEntrada2.Text) as TJSONArray;
   try
     GuiaList := TObjectList<TGuiaMonitoramento>.Create;
     try
@@ -630,7 +630,7 @@ begin
       JSONConverter.Free;
       try
         mmSaida3.Clear;
-        mmSaida3.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONObject.ToString)
+        mmSaida3.Lines.Add(TJSONObject.ParseJSONValue(JSONObject.ToString)
           .Format());
       finally
         JSONObject.Free;
@@ -651,7 +651,7 @@ var
   JSONEntrada: TJSONArray;
   JSONConverter: TJSONDynConverter;
 begin
-  JSONEntrada := TJSONArray.ParseJSONValue(mmEntrada4.Text) as TJSONArray;
+  JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada4.Text) as TJSONArray;
 
   GuiaList := TObjectList<TGuiaMonitoramento>.Create;
   try
@@ -664,7 +664,7 @@ begin
       JSONArray); // Converte a lista de objetos para JSONArray
     JSONConverter.Free;
 
-    mmSaida4.Lines.Add(TJSONValue.Create.ParseJSONValue(JSONArray.ToString)
+    mmSaida4.Lines.Add(TJSONObject.ParseJSONValue(JSONArray.ToString)
       .Format());
   finally
     JSONArray.Free; // Libere o JSONArray após o uso

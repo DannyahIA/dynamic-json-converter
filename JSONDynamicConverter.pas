@@ -53,88 +53,11 @@ implementation
 { JSONString to Object }
 procedure TJSONDynConverter.JSONStringToObject(AJSONString: string;
   AObject: TObject);
-var
-  Context: TRttiContext; // Contexto RTTI para acessar as propriedades do objeto
-  RttiType: TRttiType; // Representa o tipo do objeto usando RTTI
-  Prop: TRttiProperty; // Propriedade RTTI para cada campo no objeto
-  JsonPair: TJSONPair; // Representa um par de chave-valor no JSON
-  JSONArray: TJSONArray; // Representa um array no JSON
-  ElemClass: TClass; // Classe dos elementos no array dinâmico
-  I: integer; // Iterador de loop
-  SubObject: TObject; // Objeto auxiliar para elementos de arrays
-  ArrayValue: TValue; // Valor do array final para ser atribuído à propriedade
-  TValueArray: TArray<TValue>;
-  // Array de valores para os elementos do array dinâmico
 begin
   var
   AJSONObject := TJSONObject.ParseJSONValue(AJSONString) as TJSONObject;
   try
-    Context := TRttiContext.Create; // Inicializa o contexto RTTI
-    try
-      RttiType := Context.GetType(AObject.ClassType);
-      // Obtém o tipo RTTI do objeto
-
-      // Itera sobre cada par chave-valor do JSON
-      for JsonPair in AJSONObject do
-      begin
-        // Tenta obter a propriedade do objeto correspondente à chave do JSON
-        Prop := RttiType.GetProperty(JsonPair.JSONString.Value);
-
-        // Verifica se a propriedade existe no objeto
-        if Assigned(Prop) then
-        begin
-          // Verifica se a propriedade é um array dinâmico e se o valor no JSON é um array
-          if (Prop.PropertyType.TypeKind = tkDynArray) and
-            (JsonPair.JsonValue is TJSONArray) then
-          begin
-            JSONArray := TJSONArray(JsonPair.JsonValue);
-            // Converte o valor JSON para TJSONArray
-            SetLength(TValueArray, JSONArray.Count);
-            // Define o tamanho do array com base na quantidade de itens do JSON
-
-            // Obtém a classe dos elementos do array dinâmico
-            ElemClass := (Prop.PropertyType as TRttiDynamicArrayType)
-              .ElementType.AsInstance.MetaclassType;
-
-            // Itera sobre os itens do array no JSON
-            for I := 0 to JSONArray.Count - 1 do
-            begin
-              // Se o item do array no JSON for um objeto, processa recursivamente
-              if JSONArray.Items[I] is TJSONObject then
-              begin
-                SubObject := ElemClass.Create;
-                // Cria uma instância do tipo de elemento do array
-                try
-                  // Chama recursivamente para preencher o subobjeto com o JSON
-                  JSONToObject(JSONArray.Items[I] as TJSONObject, SubObject);
-                  TValueArray[I] := TValue.From(SubObject);
-                  // Armazena o subobjeto no array
-                except
-                  SubObject.Free; // Libera o subobjeto em caso de erro
-                  raise;
-                end;
-              end
-              else
-                raise Exception.CreateFmt
-                  ('Array item at index %d is not a valid JSON object.', [I]);
-              // Erro se o item do array não for um objeto JSON
-            end;
-
-            // Converte o array de valores para um TValue e o atribui à propriedade do objeto
-            ArrayValue := TValue.FromArray(Prop.PropertyType.Handle,
-              TValueArray);
-            Prop.SetValue(AObject, ArrayValue);
-          end
-          else
-          begin
-            CheckJSONValueType(JsonPair, Prop, AObject);
-            // Lida com propriedades de tipos simples (strings, números, etc.)
-          end;
-        end;
-      end;
-    finally
-      Context.Free; // Libera o contexto RTTI ao final
-    end;
+    JSONToObject(AJSONObject, AObject);
   finally
     AJSONObject.Free;
   end;
@@ -231,30 +154,9 @@ var
   SubObject: T;
 begin
   var
-  AJSONArray := TJSONArray.Create.ParseJSONValue(AJSONString) as TJSONArray;
+  AJSONArray := TJSONObject.ParseJSONValue(AJSONString) as TJSONArray;
   try
-    // Limpa a lista para adicionar novos objetos
-    AObjectList.Clear;
-
-    // Itera pelos itens do JSON array
-    for I := 0 to AJSONArray.Count - 1 do
-    begin
-      if AJSONArray.Items[I] is TJSONObject then
-      begin
-        SubObject := T.Create; // Cria o objeto do tipo T (classe genérica)
-        try
-          JSONToObject(AJSONArray.Items[I] as TJSONObject, SubObject);
-          // Converte o JSON para o objeto
-          AObjectList.Add(SubObject); // Adiciona o objeto à lista
-        except
-          SubObject.Free; // Libera o objeto em caso de erro
-          raise;
-        end;
-      end
-      else
-        raise Exception.CreateFmt
-          ('Item no índice %d não é um objeto JSON válido.', [I]);
-    end;
+    JSONArrayToObjectList<T>(AJSONArray, AObjectList);
   finally
     AJSONArray.Free;
   end;
