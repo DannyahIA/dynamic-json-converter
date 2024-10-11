@@ -16,7 +16,7 @@ object Form1: TForm1
     Top = 0
     Width = 619
     Height = 388
-    ActivePage = tabObjectListToJSONArray
+    ActivePage = tabParseJSON
     Align = alClient
     TabOrder = 0
     object tabParseJSON: TTabSheet

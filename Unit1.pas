@@ -98,7 +98,7 @@ begin
     GuiaMonitoramento := TGuiaMonitoramento.Create;
     try
       JSONConverter := TJSONDynConverter.Create;
-      JSONConverter.Create.JSONToObject(GuiaMonitoramento, JSONObj);
+      JSONConverter.Create.JSONToObject(JSONObj, GuiaMonitoramento);
       JSONConverter.Free;
 
       // Limpa a saída antes de colocar novos dados
@@ -623,10 +623,10 @@ begin
     Loja := TLoja.Create;
     try
       JSONConverter := TJSONDynConverter.Create;
-      JSONConverter.JSONToObject(Loja, JSONEntrada);
+      JSONConverter.JSONToObject(JSONEntrada, Loja);
 
       JSONObject := TJSONObject.Create;
-      JSONConverter.ObjectToJSON(Loja, JSONObject);
+      JSONConverter.ObjectToJSONObject(Loja, JSONObject);
       JSONConverter.Free;
       try
         mmSaida3.Clear;
