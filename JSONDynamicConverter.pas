@@ -15,34 +15,34 @@ type
     { ---------------------- JSON TO OBJECT  ---------------------- }
 
     // JSONString to Object
-    procedure JSONStringToObject(AJSONString: string; AObject: TObject);
+    class procedure JSONStringToObject(AJSONString: string; AObject: TObject);
 
     // JSONObject to Object
-    procedure JSONToObject(AJSONObject: TJSONObject; AObject: TObject);
+    class procedure JSONToObject(AJSONObject: TJSONObject; AObject: TObject);
 
     // JSONString to ObjectList
-    procedure JSONStringToObjectList<T: class, constructor>(AJSONString: string;
+    class procedure JSONStringToObjectList<T: class, constructor>(AJSONString: string;
       AObjectList: TObjectList<T>);
 
     // JSONArray to ObjectList
-    procedure JSONArrayToObjectList<T: class, constructor>
+    class procedure JSONArrayToObjectList<T: class, constructor>
       (AJSONArray: TJSONArray; AObjectList: TObjectList<T>);
 
     { ---------------------- OBJECT TO JSON ---------------------- }
 
     // Object to JSONObject
-    procedure ObjectToJSONObject(AObject: TObject;
+    class procedure ObjectToJSONObject(AObject: TObject;
       var AJSONObject: TJSONObject);
 
     // ObjectList to JSONArray
-    procedure ObjectListToJSONArray<T: class>(AObjectList: TObjectList<T>;
+    class procedure ObjectListToJSONArray<T: class>(AObjectList: TObjectList<T>;
       var AJSONArray: TJSONArray);
 
   private
     { --------------------------- UTILS --------------------------- }
 
     // Check Json Value Type
-    procedure CheckJSONValueType(JsonPair: TJSONPair; Prop: TRttiProperty;
+    class procedure CheckJSONValueType(JsonPair: TJSONPair; Prop: TRttiProperty;
       AObject: TObject);
   end;
 
@@ -51,7 +51,7 @@ implementation
 { --------------------------- JSON TO OBJECT --------------------------- }
 
 { JSONString to Object }
-procedure TJSONDynConverter.JSONStringToObject(AJSONString: string;
+class procedure TJSONDynConverter.JSONStringToObject(AJSONString: string;
   AObject: TObject);
 begin
   var
@@ -64,7 +64,7 @@ begin
 end;
 
 { JSONObject to Object }
-procedure TJSONDynConverter.JSONToObject(AJSONObject: TJSONObject;
+class procedure TJSONDynConverter.JSONToObject(AJSONObject: TJSONObject;
   AObject: TObject);
 var
   Context: TRttiContext; // Contexto RTTI para acessar as propriedades do objeto
@@ -147,7 +147,7 @@ begin
 end;
 
 { JSONString to ObjectList }
-procedure TJSONDynConverter.JSONStringToObjectList<T>(AJSONString: string;
+class procedure TJSONDynConverter.JSONStringToObjectList<T>(AJSONString: string;
   AObjectList: TObjectList<T>);
 var
   I: integer;
@@ -163,7 +163,7 @@ begin
 end;
 
 { JSONArray to ObjectList }
-procedure TJSONDynConverter.JSONArrayToObjectList<T>(AJSONArray: TJSONArray;
+class procedure TJSONDynConverter.JSONArrayToObjectList<T>(AJSONArray: TJSONArray;
   AObjectList: TObjectList<T>);
 var
   I: integer;
@@ -196,7 +196,7 @@ end;
 { --------------------------- OBJECT TO JSON --------------------------- }
 
 { Object to JSONObject }
-procedure TJSONDynConverter.ObjectToJSONObject(AObject: TObject;
+class procedure TJSONDynConverter.ObjectToJSONObject(AObject: TObject;
   var AJSONObject: TJSONObject);
 var
   Context: TRttiContext; // Contexto para RTTI
@@ -310,7 +310,7 @@ begin
 end;
 
 { ObjectList to JSONArray }
-procedure TJSONDynConverter.ObjectListToJSONArray<T>
+class procedure TJSONDynConverter.ObjectListToJSONArray<T>
   (AObjectList: TObjectList<T>; var AJSONArray: TJSONArray);
 var
   I: integer;
@@ -330,7 +330,7 @@ end;
 { --------------------------- UTILS --------------------------- }
 
 { CheckValueType }
-procedure TJSONDynConverter.CheckJSONValueType(JsonPair: TJSONPair;
+class procedure TJSONDynConverter.CheckJSONValueType(JsonPair: TJSONPair;
   Prop: TRttiProperty; AObject: TObject);
 begin
   // Verifica se o valor do campo no JSON é null
