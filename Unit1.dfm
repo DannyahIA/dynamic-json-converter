@@ -2,46 +2,48 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 388
-  ClientWidth = 619
+  ClientHeight = 387
+  ClientWidth = 615
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = True
-  PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
     Left = 0
     Top = 0
-    Width = 619
-    Height = 388
+    Width = 615
+    Height = 387
     ActivePage = tabParseJSON
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 611
+    ExplicitHeight = 386
     object tabParseJSON: TTabSheet
       Caption = 'Parse JSON'
       object pnlParseJSON: TPanel
         Left = 0
         Top = 0
-        Width = 611
-        Height = 360
+        Width = 607
+        Height = 359
         Align = alClient
         TabOrder = 0
+        ExplicitWidth = 603
+        ExplicitHeight = 358
         object Splitter1: TSplitter
           Left = 305
           Top = 20
-          Height = 311
+          Height = 310
           ExplicitLeft = 345
           ExplicitTop = 17
           ExplicitHeight = 358
         end
         object Splitter2: TSplitter
           Left = 1
-          Top = 331
-          Width = 609
+          Top = 330
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alBottom
@@ -52,7 +54,7 @@ object Form1: TForm1
         object Splitter3: TSplitter
           Left = 1
           Top = 17
-          Width = 609
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -64,7 +66,7 @@ object Form1: TForm1
           Left = 1
           Top = 20
           Width = 304
-          Height = 311
+          Height = 310
           Align = alLeft
           Lines.Strings = (
             '{'
@@ -198,34 +200,40 @@ object Form1: TForm1
             '}')
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitHeight = 309
         end
         object mmSaida: TMemo
           Left = 308
           Top = 20
-          Width = 302
-          Height = 311
+          Width = 298
+          Height = 310
           Align = alClient
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
+          ExplicitWidth = 294
+          ExplicitHeight = 309
         end
         object btmParse: TButton
           Left = 1
-          Top = 334
-          Width = 609
+          Top = 333
+          Width = 605
           Height = 25
           Align = alBottom
           Caption = 'Parse JSON'
           TabOrder = 2
           OnClick = btmParseClick
+          ExplicitTop = 332
+          ExplicitWidth = 601
         end
         object pnlHeader: TPanel
           Left = 1
           Top = 1
-          Width = 609
+          Width = 605
           Height = 16
           Align = alTop
           TabOrder = 3
+          ExplicitWidth = 601
           object lblEntrada: TLabel
             Left = 121
             Top = 0
@@ -251,22 +259,22 @@ object Form1: TForm1
       object pnlParseJSONArray: TPanel
         Left = 0
         Top = 0
-        Width = 611
-        Height = 360
+        Width = 607
+        Height = 359
         Align = alClient
         TabOrder = 0
         object Splitter7: TSplitter
           Left = 305
           Top = 20
-          Height = 311
+          Height = 310
           ExplicitLeft = 345
           ExplicitTop = 17
           ExplicitHeight = 358
         end
         object Splitter8: TSplitter
           Left = 1
-          Top = 331
-          Width = 609
+          Top = 330
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alBottom
@@ -277,7 +285,7 @@ object Form1: TForm1
         object Splitter9: TSplitter
           Left = 1
           Top = 17
-          Width = 609
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -289,7 +297,7 @@ object Form1: TForm1
           Left = 1
           Top = 20
           Width = 304
-          Height = 311
+          Height = 310
           Align = alLeft
           Lines.Strings = (
             '['
@@ -1387,8 +1395,8 @@ object Form1: TForm1
         object mmSaida2: TMemo
           Left = 308
           Top = 20
-          Width = 302
-          Height = 311
+          Width = 298
+          Height = 310
           Align = alClient
           ReadOnly = True
           ScrollBars = ssVertical
@@ -1396,8 +1404,8 @@ object Form1: TForm1
         end
         object btmParseJSONArray: TButton
           Left = 1
-          Top = 334
-          Width = 609
+          Top = 333
+          Width = 605
           Height = 25
           Align = alBottom
           Caption = 'Parse JSONArray'
@@ -1407,7 +1415,7 @@ object Form1: TForm1
         object pnlHeader2: TPanel
           Left = 1
           Top = 1
-          Width = 609
+          Width = 605
           Height = 16
           Align = alTop
           TabOrder = 3
@@ -1436,25 +1444,23 @@ object Form1: TForm1
       object pnlObjectToJSON: TPanel
         Left = 0
         Top = 0
-        Width = 611
-        Height = 360
+        Width = 607
+        Height = 359
         Align = alClient
         Caption = 'Panel1'
         TabOrder = 0
-        ExplicitWidth = 607
-        ExplicitHeight = 359
         object Splitter4: TSplitter
           Left = 305
           Top = 20
-          Height = 311
+          Height = 310
           ExplicitLeft = 345
           ExplicitTop = 17
           ExplicitHeight = 358
         end
         object Splitter5: TSplitter
           Left = 1
-          Top = 331
-          Width = 609
+          Top = 330
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alBottom
@@ -1467,7 +1473,7 @@ object Form1: TForm1
         object Splitter6: TSplitter
           Left = 1
           Top = 17
-          Width = 609
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -1481,7 +1487,7 @@ object Form1: TForm1
           Left = 1
           Top = 20
           Width = 304
-          Height = 311
+          Height = 310
           Align = alLeft
           Lines.Strings = (
             '{'
@@ -1576,35 +1582,30 @@ object Form1: TForm1
         object mmSaida3: TMemo
           Left = 308
           Top = 20
-          Width = 302
-          Height = 311
+          Width = 298
+          Height = 310
           Align = alClient
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
-          ExplicitWidth = 298
-          ExplicitHeight = 310
         end
         object btmConvert: TButton
           Left = 1
-          Top = 334
-          Width = 609
+          Top = 333
+          Width = 605
           Height = 25
           Align = alBottom
           Caption = 'Object to JSON'
           TabOrder = 2
           OnClick = btObjToJsonClick
-          ExplicitTop = 333
-          ExplicitWidth = 605
         end
         object pnlHeader3: TPanel
           Left = 1
           Top = 1
-          Width = 609
+          Width = 605
           Height = 16
           Align = alTop
           TabOrder = 3
-          ExplicitWidth = 605
           object Label1: TLabel
             Left = 121
             Top = 0
@@ -1630,24 +1631,22 @@ object Form1: TForm1
       object pnlObjectListToJSONArray: TPanel
         Left = 0
         Top = 0
-        Width = 611
-        Height = 360
+        Width = 607
+        Height = 359
         Align = alClient
         TabOrder = 0
-        ExplicitWidth = 607
-        ExplicitHeight = 359
         object Splitter10: TSplitter
           Left = 305
           Top = 20
-          Height = 311
+          Height = 310
           ExplicitLeft = 345
           ExplicitTop = 17
           ExplicitHeight = 358
         end
         object Splitter11: TSplitter
           Left = 1
-          Top = 331
-          Width = 609
+          Top = 330
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alBottom
@@ -1660,7 +1659,7 @@ object Form1: TForm1
         object Splitter12: TSplitter
           Left = 1
           Top = 17
-          Width = 609
+          Width = 605
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -1674,7 +1673,7 @@ object Form1: TForm1
           Left = 1
           Top = 20
           Width = 304
-          Height = 311
+          Height = 310
           Align = alLeft
           Lines.Strings = (
             '['
@@ -2772,8 +2771,8 @@ object Form1: TForm1
         object mmSaida4: TMemo
           Left = 308
           Top = 20
-          Width = 302
-          Height = 311
+          Width = 298
+          Height = 310
           Align = alClient
           ReadOnly = True
           ScrollBars = ssVertical
@@ -2781,8 +2780,8 @@ object Form1: TForm1
         end
         object btmObjectListToJSONArray: TButton
           Left = 1
-          Top = 334
-          Width = 609
+          Top = 333
+          Width = 605
           Height = 25
           Align = alBottom
           Caption = 'ObjectList to JSONArray'
@@ -2792,7 +2791,7 @@ object Form1: TForm1
         object pnlHeader4: TPanel
           Left = 1
           Top = 1
-          Width = 609
+          Width = 605
           Height = 16
           Align = alTop
           TabOrder = 3

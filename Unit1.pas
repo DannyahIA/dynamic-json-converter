@@ -19,7 +19,7 @@ uses
   DtosExemplo,
 
   // FUNÇÃO PARA CONVERTER JSON
-  JSONDynamicConverter;
+  NTConverter;
 
 type
   TForm1 = class(TForm)
@@ -89,7 +89,7 @@ implementation
 procedure TForm1.btmParseClick(Sender: TObject);
 var
   GuiaMonitoramento: TGuiaMonitoramento;
-  JSONConverter: TJSONDynConverter;
+  Converter: TNTConverter;
   JSONObj: TJSONObject;
 begin
   // Parse da string para um JsonObject
@@ -97,9 +97,7 @@ begin
   try
     GuiaMonitoramento := TGuiaMonitoramento.Create;
     try
-      JSONConverter := TJSONDynConverter.Create;
-      JSONConverter.Create.JSONToObject(JSONObj, GuiaMonitoramento);
-      JSONConverter.Free;
+      Converter.JSONConverter.JSONToObject(JSONObj, GuiaMonitoramento);
 
       // Limpa a saída antes de colocar novos dados
       mmSaida.Clear;
@@ -344,7 +342,7 @@ end;
 procedure TForm1.btmParseJSONArrayClick(Sender: TObject);
 var
   GuiaList: TObjectList<TGuiaMonitoramento>;
-  JSONConverter: TJSONDynConverter;
+  Converter: TNTConverter;
   JSONArray: TJSONArray;
 begin
   // Parse da string para um JsonArray
@@ -352,10 +350,8 @@ begin
   try
     GuiaList := TObjectList<TGuiaMonitoramento>.Create;
     try
-      JSONConverter := TJSONDynConverter.Create;
-      JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONArray,
+      Converter.JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONArray,
         GuiaList);
-      JSONConverter.Free;
 
       // Limpa a saída antes de colocar novos dados
       mmSaida2.Clear;
@@ -616,18 +612,16 @@ var
 
   // Variaveis de conversão de objeto para json
   JSONObject: TJSONObject;
-  JSONConverter: TJSONDynConverter;
+  Converter: TNTConverter;
 begin
   JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada3.Text) as TJSONObject;
   try
     Loja := TLoja.Create;
     try
-      JSONConverter := TJSONDynConverter.Create;
-      JSONConverter.JSONToObject(JSONEntrada, Loja);
+      Converter.JSONConverter.JSONToObject(JSONEntrada, Loja);
 
       JSONObject := TJSONObject.Create;
-      JSONConverter.ObjectToJSONObject(Loja, JSONObject);
-      JSONConverter.Free;
+      Converter.ObjectConverter.ObjectToJSONObject(Loja, JSONObject);
       try
         mmSaida3.Clear;
         mmSaida3.Lines.Add(TJSONObject.ParseJSONValue(JSONObject.ToString)
@@ -649,20 +643,18 @@ var
   JSONArray: TJSONArray;
 
   JSONEntrada: TJSONArray;
-  JSONConverter: TJSONDynConverter;
+  Converter: TNTConverter;
 begin
   JSONEntrada := TJSONObject.ParseJSONValue(mmEntrada4.Text) as TJSONArray;
 
   GuiaList := TObjectList<TGuiaMonitoramento>.Create;
   try
-    JSONConverter := TJSONDynConverter.Create;
-    JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONEntrada,
+    Converter.JSONConverter.JSONArrayToObjectList<TGuiaMonitoramento>(JSONEntrada,
       GuiaList);
 
     // Preenche a lista GuiaList com objetos do tipo TGuia
-    JSONConverter.ObjectListToJSONArray<TGuiaMonitoramento>(GuiaList,
+    Converter.ObjectConverter.ObjectListToJSONArray<TGuiaMonitoramento>(GuiaList,
       JSONArray); // Converte a lista de objetos para JSONArray
-    JSONConverter.Free;
 
     mmSaida4.Lines.Add(TJSONObject.ParseJSONValue(JSONArray.ToString)
       .Format());
